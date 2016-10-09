@@ -1,0 +1,6 @@
+{
+  "uuid": "automatic-shutdown-timer@gmail.com",
+  "description": "Allows to shutdown, restart and suspend computer after selected amount of time or in selected time.",
+  "shell-version": ["3.20.4"],
+  "name": "Automatic shutdown timer"
+}
