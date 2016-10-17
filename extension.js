@@ -1,8 +1,18 @@
+// UI stuff
 const St = imports.gi.St;
-const Main = imports.ui.main;
-const Lang = imports.lang;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
+const Main = imports.ui.main;
+
+const Gio = imports.gi.Gio;
+const Gtk = imports.gi.Gtk;
+const Gir = imports.gi.GIRepository;
+const Lang = imports.lang;
+// shutdown functionality
+const GnomeSession = imports.misc.gnomeSession;
+//settings
+const Extension = imports.misc.extensionUtils.getCurrentExtension();
+const Util = imports.misc.util;
 
 const ShutdownTimerButton = new Lang.Class({
   Name: 'ShutdownTimerButton',
@@ -11,38 +21,55 @@ const ShutdownTimerButton = new Lang.Class({
    _init: function ()
    {
      this.parent(0.0, "Transfer Wise Indicator");
-     this.text = new St.Label({text: "Text"});
 
      this.button = new St.BoxLayout({ style_class: 'panel-button' });
      this.icon = new St.Icon({ icon_name: 'org.gnome.clocks-symbolic',
                              style_class: 'system-status-icon' });
+     this.time = new St.Label({ text: '00:00:00',
+                              style_class: 'timeLabel' });
 
-      this.button.add_child(this.icon);
-      this.actor.add_actor(this.button);
+     this.button.add_child(this.icon);
+     this.button.add_child(this.time);
 
-      this._buildMenu();
+     this.actor.add_actor(this.button);
+
+     this._buildMenu();
   },
 
   _buildMenu: function () {
-      let that = this;
+
       // Create menu section for items
-      that.historySection = new PopupMenu.PopupMenuSection();
+      this.popupMenu = new PopupMenu.PopupMenuSection();
 
-      that.scrollViewMenuSection = new PopupMenu.PopupMenuSection();
-      let historyScrollView = new St.ScrollView({
-          style_class: 'ci-history-menu-section',
-          overlay_scrollbars: true
-      });
-      historyScrollView.add_actor(that.historySection.actor);
+      this.scrollViewMenuSection = new PopupMenu.PopupMenuSection();
+      let scrollView = new St.ScrollView();
 
-      that.scrollViewMenuSection.actor.add_actor(historyScrollView);
+      scrollView.add_actor(this.popupMenu.actor);
 
-      that.menu.addMenuItem(that.scrollViewMenuSection);
+      this.scrollViewMenuSection.actor.add_actor(scrollView);
+
+      this.menu.addMenuItem(this.scrollViewMenuSection);
 
       // Add separator
-      that.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-      let menuItem = new PopupMenu.PopupMenuItem('fuck');
-      this.historySection.addMenuItem(menuItem, 0);
+      this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+      // First Item
+      let newTimer = new PopupMenu.PopupMenuItem('New Timer');
+      this.popupMenu.addMenuItem(newTimer, 0);
+      // Second Item
+      this.pauseTimer = new PopupMenu.PopupMenuItem('Pause/Resume Timer');
+      this.popupMenu.addMenuItem(this.pauseTimer, 1);
+
+      newTimer.connect('activate', Lang.bind(this, this._openSettings));
+      global.log('how about no')
+
+    },
+
+    _openSettings: function () {
+        global.log('how about no')
+        Util.spawn([
+            "gnome-shell-extension-prefs",
+            Extension.metadata.uuid
+        ]);
     },
 
 });
@@ -61,5 +88,4 @@ function enable()
 
 function disable()
 {
-  twMenu.destroy();
 }
