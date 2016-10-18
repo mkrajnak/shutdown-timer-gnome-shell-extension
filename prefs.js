@@ -65,7 +65,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         hours.set_range(0, 60);
         hours.connect('value-changed', Lang.bind(this, function(){
         }));
-        hours.set_value(maxTimerValueDefault);
+        hours.set_value(0);
         this.attach(hours, 2, 4, 1, 1);
         //this.add(hours);
 
