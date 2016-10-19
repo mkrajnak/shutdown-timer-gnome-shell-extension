@@ -88,4 +88,5 @@ function enable()
 
 function disable()
 {
+  shutdownTimerButton.destroy()
 }
