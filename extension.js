@@ -60,8 +60,6 @@ const ShutdownTimerButton = new Lang.Class({
       this.popupMenu.addMenuItem(this.pauseTimer, 1);
 
       newTimer.connect('activate', Lang.bind(this, this._openSettings));
-      global.log('how about no')
-
     },
 
     _openSettings: function () {

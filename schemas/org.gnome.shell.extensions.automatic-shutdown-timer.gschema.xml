@@ -2,23 +2,22 @@
 <schemalist gettext-domain="ShutdownTimer">
   <schema path="/org/gnome/shell/extensions/automatic-shutdown-timer/" id="org.gnome.shell.extensions.automatic-shutdown-timer">
 
-    <key type="i" name="max-timer-value">
-      <default>180</default>
-      <summary>Maximum time (in minutes)</summary>
-      <description>Set maximum selectable time of the slider (in minutes). Use only values greater zero.</description>
+    <key type="i" name="hours-value">
+      <default>0</default>
+      <summary>Hours</summary>
+      <description>Set time value in hours. Range 0 to 60.</description>
     </key>
 
-    <key type="i" name="slider-value">
-      <default>70</default>
-      <summary>Slider position</summary>
-      <description>Set slider position as percent of the maximum time. Must be in range 0 and 100</description>
+    <key type="i" name="minutes-value">
+      <default>0</default>
+      <summary>Minutes</summary>
+      <description>Set time value in minutes. Range 0 to 60.</description>
     </key>
 
-    <key type="b" name="root-mode-value">
-      <default>false</default>
-      <summary>Root mode</summary>
-      <description>Set root mode on/off. In root mode powering off is done via 'pkexec' and 'shutdown' terminal command.</description>
+    <key type="i" name="seconds-value">
+      <default>0</default>
+      <summary>Seconds</summary>
+      <description>Set time value in seconds. Range 0 to 60.</description>
     </key>
-
   </schema>
 </schemalist>

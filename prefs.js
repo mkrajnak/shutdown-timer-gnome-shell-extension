@@ -63,9 +63,12 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         hours.set_increments(1, 1);
         hours.modify_font(Pango.font_description_from_string('30'))
         hours.set_range(0, 60);
-        hours.connect('value-changed', Lang.bind(this, function(){
-        }));
         hours.set_value(0);
+        hours.set_value(settings.get_int('minutes-value'));
+
+        hours.connect('value-changed', Lang.bind(this, function(){
+          settings.set_int('hours-value', hours.get_value_as_int());
+        }));
         this.attach(hours, 2, 4, 1, 1);
         //this.add(hours);
 
@@ -74,6 +77,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         minutes.modify_font(Pango.font_description_from_string('30'))
         minutes.set_range(0, 59);
         minutes.set_value(0);
+        minutes.set_value(settings.get_int('minutes-value'));
 
         let tmp_min = minutes.get_value_as_int()
         minutes.connect('value-changed', Lang.bind(this, function(){
@@ -86,6 +90,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
             }
           }
           tmp_time = time;
+          settings.set_int('minutes-value', minutes.get_value_as_int());
         }));
         this.attach_next_to(minutes, hours, Gtk.PositionType.RIGHT, 1, 1);
 
@@ -94,6 +99,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         seconds.modify_font(Pango.font_description_from_string('30'))
         seconds.set_increments(1, 1);
         seconds.set_range(0, 60);
+        seconds.set_value(settings.get_int('seconds-value'));
         // handle change
         let tmp_secs = seconds.get_value_as_int()
         seconds.connect('value-changed', Lang.bind(this, function(){
@@ -110,9 +116,8 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
             }
           }
           tmp_secs = cs_time;
-
+          settings.set_int('seconds-value', seconds.get_value_as_int());
         }));
-        seconds.set_value(0);
         this.attach_next_to(seconds, minutes, Gtk.PositionType.RIGHT, 1, 1);
 
         this.attach(new Gtk.HSeparator(), 0, 5, 6, 1);
