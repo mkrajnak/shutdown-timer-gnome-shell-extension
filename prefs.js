@@ -99,6 +99,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         seconds.set_increments(1, 1);
         seconds.set_range(-1, 60);
         seconds.set_value(settings.get_int('seconds-value'));
+
         // handle change
         let tmp_secs = seconds.get_value_as_int()
         seconds.connect('value-changed', Lang.bind(this, function(){
@@ -114,13 +115,17 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
               minutes.set_value(val)
             }
           }
-          if ( cs_time === -1) {
+          if ( cs_time < 0) {
             if (tmp_secs > cs_time) {
               seconds.set_value(59)
-              let val = minutes.get_value_as_int() - 1
-              if (val === -1) {
-                let h_val = hours.get_value_as_int()
-                hours.set_value(hval - 1)
+              let val = minutes.get_value_as_int()
+              val = val - 1
+              if (val < 0) {
+                let hval;
+                hval = hours.get_value_as_int()
+                if (hval > 0) {
+                  hours.set_value(hval - 1)
+                }
                 val = 0
               }
               minutes.set_value(val)
@@ -151,6 +156,13 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     }
 
 });
+
+function powerOff() {
+	Main.overview.hide();
+	let session = new GnomeSession.SessionManager();
+	session.ShutdownRemote(0);	// shutdown after 60s
+	//Util.spawnCommandLine('poweroff');	// shutdown immediately
+}
 
 function buildPrefsWidget() {
     let widget = new AutomaticShutdownTimerPrefs;

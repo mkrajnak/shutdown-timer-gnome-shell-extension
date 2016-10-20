@@ -3,7 +3,7 @@ const St = imports.gi.St;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Main = imports.ui.main;
-
+const Mainloop = imports.mainloop;
 const Gio = imports.gi.Gio;
 const Gtk = imports.gi.Gtk;
 const Gir = imports.gi.GIRepository;
@@ -15,6 +15,9 @@ const Extension = imports.misc.extensionUtils.getCurrentExtension();
 const Convenience = Extension.imports.convenience;
 const Util = imports.misc.util;
 const GLib = imports.gi.GLib;
+
+
+let shutdownTimerButton, settings, time, h, m, s;
 
 const ShutdownTimerButton = new Lang.Class({
   Name: 'ShutdownTimerButton',
@@ -72,17 +75,64 @@ const ShutdownTimerButton = new Lang.Class({
           Extension.metadata.uuid
       ]);
     },
-
 });
+//ShutdownTimerButton
 
-let shutdownTimerButton;
-let settings;
-
+// get values from settings
 function onUpdate(){
-  let h = settings.get_int('hours-value').toString()
-  let m = settings.get_int('minutes-value').toString()
-  let s = settings.get_int('seconds-value').toString()
-  shutdownTimerButton.time.text =  GLib.test_timer_elapsed().toString() ;
+  h = settings.get_int('hours-value')
+  m = settings.get_int('minutes-value')
+  s = settings.get_int('seconds-value')
+  time = h*3600 + m*60 + s
+  global.log('shutdown in ' + time.toString())
+
+  start()
+  //render_time()
+}
+
+let timer
+function start(){
+  GLib.test_timer_start();
+  let tmp = 0;
+  let time;
+  while (time > tmp){
+    time = GLib.test_timer_elapsed()
+    render_time()
+    Mainloop.timeout_add_seconds(1, return_false());
+  }
+  shutdown()
+}
+
+function return_false(){return false}
+
+function render_time(){
+  global.log('lel')
+  s = s - 1;
+  if (s === 0) {
+    if (m === 0) {
+      h = h - 1;
+      m = 59;
+    }
+    else {
+      m = m - 1;
+    }
+    s = 59;
+  }
+  let H,M,S;
+  H = h.toString();
+  M = m.toString();
+  S = s.toString();
+  H = H.length === 1 ? '0' + H : H;
+  M = M.length === 1 ? '0' + M : M;
+  S = S.length === 1 ? '0' + S : S;
+  shutdownTimerButton.time.text = H + ":" + M + ":" + S;
+  return true;
+}
+
+function shutdown(){
+  Main.overview.hide();
+	let session = new GnomeSession.SessionManager();
+	session.ShutdownRemote(0);
 }
 
 function init()
@@ -94,7 +144,7 @@ function enable()
 {
   shutdownTimerButton = new ShutdownTimerButton();
   Main.panel.addToStatusArea('shutdown-timer-button', shutdownTimerButton);
-  GLib.test_timer_start()
+
   settings.connect('changed::seconds-value', onUpdate);
 	settings.connect('changed::hours-value', onUpdate);
 	settings.connect('changed::minutes-value', onUpdate);
