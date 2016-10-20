@@ -12,11 +12,13 @@ const Lang = imports.lang;
 const GnomeSession = imports.misc.gnomeSession;
 //settings
 const Extension = imports.misc.extensionUtils.getCurrentExtension();
+const Convenience = Extension.imports.convenience;
 const Util = imports.misc.util;
 
 const ShutdownTimerButton = new Lang.Class({
   Name: 'ShutdownTimerButton',
   Extends: PanelMenu.Button,
+  time: null,
 
    _init: function ()
    {
@@ -25,7 +27,7 @@ const ShutdownTimerButton = new Lang.Class({
      this.button = new St.BoxLayout({ style_class: 'panel-button' });
      this.icon = new St.Icon({ icon_name: 'org.gnome.clocks-symbolic',
                              style_class: 'system-status-icon' });
-     this.time = new St.Label({ text: '00:00:00',
+     this.time = new St.Label({ text: "00:00:00",
                               style_class: 'timeLabel' });
 
      this.button.add_child(this.icon);
@@ -63,25 +65,38 @@ const ShutdownTimerButton = new Lang.Class({
     },
 
     _openSettings: function () {
-        global.log('how about no')
-        Util.spawn([
-            "gnome-shell-extension-prefs",
-            Extension.metadata.uuid
-        ]);
+      global.log('how about no')
+      Util.spawn([
+          "gnome-shell-extension-prefs",
+          Extension.metadata.uuid
+      ]);
     },
 
 });
 
 let shutdownTimerButton;
+let settings;
+
+function onUpdate(){
+  let h = settings.get_int('hours-value').toString()
+  let m = settings.get_int('minutes-value').toString()
+  let s = settings.get_int('seconds-value').toString()
+  shutdownTimerButton.time.text = h+':'+m+':'+s ;
+}
 
 function init()
 {
+  settings = Convenience.getSettings();
 }
 
 function enable()
 {
-  shutdownTimerButton = new ShutdownTimerButton;
+  shutdownTimerButton = new ShutdownTimerButton();
   Main.panel.addToStatusArea('shutdown-timer-button', shutdownTimerButton);
+
+  settings.connect('changed::seconds-value', onUpdate);
+	settings.connect('changed::hours-value', onUpdate);
+	settings.connect('changed::minutes-value', onUpdate);
 }
 
 function disable()

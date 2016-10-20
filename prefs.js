@@ -32,7 +32,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         // this.hexpand = true;
         // this.resize_mode = 0;
 
-        //this.set_orientation(Gtk.Orientation.VERTICAL);
+       //this.set_orientation(Gtk.Orientation.VERTICAL);
         this.attach(new Gtk.Label({ label:'Shutdown:'}), 0, 0, 1, 1);
         //1st row
         let afterTime = new Gtk.RadioButton({label: 'after time expires'});
@@ -62,7 +62,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         let hours = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
         hours.set_increments(1, 1);
         hours.modify_font(Pango.font_description_from_string('30'))
-        hours.set_range(0, 60);
+        hours.set_range(0, 99);
         hours.set_value(0);
         hours.set_value(settings.get_int('minutes-value'));
 
@@ -75,8 +75,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         let minutes = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
         minutes.set_increments(1, 1);
         minutes.modify_font(Pango.font_description_from_string('30'))
-        minutes.set_range(0, 59);
-        minutes.set_value(0);
+        minutes.set_range(0, 60);
         minutes.set_value(settings.get_int('minutes-value'));
 
         let tmp_min = minutes.get_value_as_int()
@@ -89,7 +88,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
               hours.set_value(val)
             }
           }
-          tmp_time = time;
+          tmp_min = time;
           settings.set_int('minutes-value', minutes.get_value_as_int());
         }));
         this.attach_next_to(minutes, hours, Gtk.PositionType.RIGHT, 1, 1);
