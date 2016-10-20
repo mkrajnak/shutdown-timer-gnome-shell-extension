@@ -97,7 +97,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         let seconds = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
         seconds.modify_font(Pango.font_description_from_string('30'))
         seconds.set_increments(1, 1);
-        seconds.set_range(0, 60);
+        seconds.set_range(-1, 60);
         seconds.set_value(settings.get_int('seconds-value'));
         // handle change
         let tmp_secs = seconds.get_value_as_int()
@@ -110,6 +110,18 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
               if (val === 60) {
                   hours.set_value(hours.get_value_as_int() + 1)
                   val = 0
+              }
+              minutes.set_value(val)
+            }
+          }
+          if ( cs_time === -1) {
+            if (tmp_secs > cs_time) {
+              seconds.set_value(59)
+              let val = minutes.get_value_as_int() - 1
+              if (val === -1) {
+                let h_val = hours.get_value_as_int()
+                hours.set_value(hval - 1)
+                val = 0
               }
               minutes.set_value(val)
             }

@@ -14,6 +14,7 @@ const GnomeSession = imports.misc.gnomeSession;
 const Extension = imports.misc.extensionUtils.getCurrentExtension();
 const Convenience = Extension.imports.convenience;
 const Util = imports.misc.util;
+const GLib = imports.gi.GLib;
 
 const ShutdownTimerButton = new Lang.Class({
   Name: 'ShutdownTimerButton',
@@ -81,7 +82,7 @@ function onUpdate(){
   let h = settings.get_int('hours-value').toString()
   let m = settings.get_int('minutes-value').toString()
   let s = settings.get_int('seconds-value').toString()
-  shutdownTimerButton.time.text = h+':'+m+':'+s ;
+  shutdownTimerButton.time.text =  GLib.test_timer_elapsed().toString() ;
 }
 
 function init()
@@ -93,7 +94,7 @@ function enable()
 {
   shutdownTimerButton = new ShutdownTimerButton();
   Main.panel.addToStatusArea('shutdown-timer-button', shutdownTimerButton);
-
+  GLib.test_timer_start()
   settings.connect('changed::seconds-value', onUpdate);
 	settings.connect('changed::hours-value', onUpdate);
 	settings.connect('changed::minutes-value', onUpdate);
