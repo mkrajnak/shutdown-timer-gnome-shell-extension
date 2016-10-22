@@ -8,9 +8,9 @@ const _ = Gettext.gettext;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = ExtensionUtils.getCurrentExtension();
 const Convenience = Extension.imports.convenience;
-
 const Pango = imports.gi.Pango;
-let settings;
+
+let settings, widget;
 
 function init() {
     settings = Convenience.getSettings();
@@ -21,8 +21,8 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     GTypeName: 'AutomaticShutdownTimerPrefs',
     Extends: Gtk.Grid,
 
-    _init: function(params) {
-        this.parent(params);
+    _init: function() {
+        this.parent();
         this.margin = 12;
 
         //this.row_homogeneous = true;
@@ -151,21 +151,19 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         this.attach_next_to(suspendRbtn, restartRbtn, Gtk.PositionType.RIGHT, 1, 1);
 
         this.attach(new Gtk.HSeparator(), 0, 7, 6, 1);
-        let apply = new Gtk.Button ({label: "Apply"});
-        this.attach(apply, 3, 8, 1, 1);
+        let start = new Gtk.Button ({label: "Start"});
+
+        start.connect('clicked', Lang.bind(this, function(){
+          global.log(!settings.get_boolean('timer-start'))
+          //settings.set_boolean('timer-start', !settings.get_boolean('timer-start'));
+        }));
+        this.attach(start, 3, 8, 1, 1);
     }
 
 });
 
-function powerOff() {
-	Main.overview.hide();
-	let session = new GnomeSession.SessionManager();
-	session.ShutdownRemote(0);	// shutdown after 60s
-	//Util.spawnCommandLine('poweroff');	// shutdown immediately
-}
-
 function buildPrefsWidget() {
-    let widget = new AutomaticShutdownTimerPrefs;
+    widget = new AutomaticShutdownTimerPrefs;
     widget.show_all();
 
     return widget;

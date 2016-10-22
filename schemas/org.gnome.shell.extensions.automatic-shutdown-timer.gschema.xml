@@ -19,5 +19,11 @@
       <summary>Seconds</summary>
       <description>Set time value in seconds. Range 0 to 60.</description>
     </key>
+
+    <key type="b" name="timer-start">
+      <default>false</default>
+      <summary>Start timer</summary>
+      <description>Start new timer</description>
+    </key>
   </schema>
 </schemalist>

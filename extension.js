@@ -26,7 +26,7 @@ const ShutdownTimerButton = new Lang.Class({
 
    _init: function ()
    {
-     this.parent(0.0, "Transfer Wise Indicator");
+     this.parent(0.0, "Automatic Shutdown Timer");
 
      this.button = new St.BoxLayout({ style_class: 'panel-button' });
      this.icon = new St.Icon({ icon_name: 'org.gnome.clocks-symbolic',
@@ -79,35 +79,28 @@ const ShutdownTimerButton = new Lang.Class({
 //ShutdownTimerButton
 
 // get values from settings
-function onUpdate(){
-  h = settings.get_int('hours-value')
-  m = settings.get_int('minutes-value')
-  s = settings.get_int('seconds-value')
-  time = h*3600 + m*60 + s
-  global.log('shutdown in ' + time.toString())
-
-  start()
-  //render_time()
+function onTimeUpdate(){
+  h = settings.get_int('hours-value');
+  m = settings.get_int('minutes-value');
+  s = settings.get_int('seconds-value');
+  time = (h*3600 + m*60 + s);
+  render_time()
 }
 
-let timer
 function start(){
-  GLib.test_timer_start();
-  let tmp = 0;
-  let time;
-  while (time > tmp){
-    time = GLib.test_timer_elapsed()
-    render_time()
-    Mainloop.timeout_add_seconds(1, return_false());
+  if (!time) {
+    onTimeUpdate()
   }
-  shutdown()
+  global.log('shutdown in ' + time.toString());
+  GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT , 1,  render_time);
 }
-
-function return_false(){return false}
 
 function render_time(){
-  global.log('lel')
-  s = s - 1;
+  if (time === 0) {
+    global.log('END');
+    shutdown();
+    return false;
+  }
   if (s === 0) {
     if (m === 0) {
       h = h - 1;
@@ -116,8 +109,10 @@ function render_time(){
     else {
       m = m - 1;
     }
-    s = 59;
+    s = 60;
   }
+  s = s - 1;
+  time = time - 1;
   let H,M,S;
   H = h.toString();
   M = m.toString();
@@ -130,6 +125,7 @@ function render_time(){
 }
 
 function shutdown(){
+  global.log('lel')
   Main.overview.hide();
 	let session = new GnomeSession.SessionManager();
 	session.ShutdownRemote(0);
@@ -145,9 +141,10 @@ function enable()
   shutdownTimerButton = new ShutdownTimerButton();
   Main.panel.addToStatusArea('shutdown-timer-button', shutdownTimerButton);
 
-  settings.connect('changed::seconds-value', onUpdate);
-	settings.connect('changed::hours-value', onUpdate);
-	settings.connect('changed::minutes-value', onUpdate);
+  settings.connect('changed::seconds-value', onTimeUpdate);
+	settings.connect('changed::hours-value', onTimeUpdate);
+	settings.connect('changed::minutes-value', onTimeUpdate);
+  settings.connect('changed::timer-start', start);
 }
 
 function disable()
