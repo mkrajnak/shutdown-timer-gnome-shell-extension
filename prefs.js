@@ -57,7 +57,6 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         this.attach_next_to(min_label, hour_label, Gtk.PositionType.RIGHT, 1, 1);
         this.attach_next_to(sec_label, min_label, Gtk.PositionType.RIGHT, 1, 1);
 
-
         //3rd row
         let hours = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
         hours.set_increments(1, 1);
@@ -65,17 +64,17 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         hours.set_range(0, 99);
         hours.set_value(0);
         hours.set_value(settings.get_int('minutes-value'));
-
+        hours.set_wrap(true)
         hours.connect('value-changed', Lang.bind(this, function(){
           settings.set_int('hours-value', hours.get_value_as_int());
         }));
+        hours.set_value(settings.get_int('hours-value'));
         this.attach(hours, 2, 4, 1, 1);
-        //this.add(hours);
 
         let minutes = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
         minutes.set_increments(1, 1);
         minutes.modify_font(Pango.font_description_from_string('30'))
-        minutes.set_range(0, 60);
+        minutes.set_range(-1, 60);
         minutes.set_value(settings.get_int('minutes-value'));
 
         let tmp_min = minutes.get_value_as_int()
@@ -85,6 +84,13 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
             if (tmp_min < time) {
               minutes.set_value(0)
               let val = hours.get_value_as_int() + 1
+              hours.set_value(val)
+            }
+          }
+          if ( time < 0) {
+            if (tmp_min > time) {
+              minutes.set_value(59)
+              let val = hours.get_value_as_int() - 1
               hours.set_value(val)
             }
           }
@@ -155,7 +161,9 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
         start.connect('clicked', Lang.bind(this, function(){
           global.log(!settings.get_boolean('timer-start'))
-          //settings.set_boolean('timer-start', !settings.get_boolean('timer-start'));
+          settings.set_boolean('timer-start', !settings.get_boolean('timer-start'));
+          let w = this.get_window()
+          w.destroy()
         }));
         this.attach(start, 3, 8, 1, 1);
     }

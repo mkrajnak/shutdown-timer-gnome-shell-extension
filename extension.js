@@ -16,13 +16,12 @@ const Convenience = Extension.imports.convenience;
 const Util = imports.misc.util;
 const GLib = imports.gi.GLib;
 
-
 let shutdownTimerButton, settings, time, h, m, s;
+let isRunning = false
 
 const ShutdownTimerButton = new Lang.Class({
   Name: 'ShutdownTimerButton',
   Extends: PanelMenu.Button,
-  time: null,
 
    _init: function ()
    {
@@ -60,19 +59,31 @@ const ShutdownTimerButton = new Lang.Class({
       let newTimer = new PopupMenu.PopupMenuItem('New Timer');
       this.popupMenu.addMenuItem(newTimer, 0);
       // Second Item
-      this.pauseTimer = new PopupMenu.PopupMenuItem('Pause/Resume Timer');
-      this.popupMenu.addMenuItem(this.pauseTimer, 1);
+      let pauseTimer = new PopupMenu.PopupMenuItem('Pause/Resume Timer');
+      this.popupMenu.addMenuItem(pauseTimer, 1);
 
+      pauseTimer.connect('activate', Lang.bind(this, this._pause));
       newTimer.connect('activate', Lang.bind(this, this._openSettings));
     },
 
     _openSettings: function () {
-      global.log('how about no')
+      isRunning = false;
+      onTimeUpdate()
       Util.spawn([
           "gnome-shell-extension-prefs",
           Extension.metadata.uuid
       ]);
     },
+
+    _pause: function () {
+      if (isRunning) {
+        isRunning = false;
+      }
+      else{
+        isRunning = true;
+        start();
+      }
+    }
 });
 //ShutdownTimerButton
 
@@ -91,10 +102,8 @@ function onTimeUpdate(){
 * start timer
 */
 function start(){
-  if (!time) {
-    onTimeUpdate()
-  }
-  global.log('shutdown in ' + time.toString());
+  global.log('AST: shutdown in s' + time.toString());
+  isRunning = true
   GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT , 1,  timer);
 }
 
@@ -116,8 +125,10 @@ function render_time(){
 * decrease seconds and properly set other values
 */
 function timer(){
+  if (!isRunning) {
+    return false;
+  }
   if (time === 0) {
-    global.log('END');
     shutdown();
     return false;
   }
@@ -141,7 +152,6 @@ function timer(){
 * uses gnome session manager to shutdown the session with one minute prompt
 */
 function shutdown(){
-  global.log('lel')
   Main.overview.hide();
 	let session = new GnomeSession.SessionManager();
 	session.ShutdownRemote(0);
