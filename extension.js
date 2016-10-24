@@ -51,9 +51,7 @@ const ShutdownTimerButton = new Lang.Class({
       let scrollView = new St.ScrollView();
 
       scrollView.add_actor(this.popupMenu.actor);
-
       this.scrollViewMenuSection.actor.add_actor(scrollView);
-
       this.menu.addMenuItem(this.scrollViewMenuSection);
 
       // Add separator
@@ -78,7 +76,9 @@ const ShutdownTimerButton = new Lang.Class({
 });
 //ShutdownTimerButton
 
-// get values from settings
+/*
+* get values from settings and render them immediately
+*/
 function onTimeUpdate(){
   h = settings.get_int('hours-value');
   m = settings.get_int('minutes-value');
@@ -87,15 +87,35 @@ function onTimeUpdate(){
   render_time()
 }
 
+/*
+* start timer
+*/
 function start(){
   if (!time) {
     onTimeUpdate()
   }
   global.log('shutdown in ' + time.toString());
-  GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT , 1,  render_time);
+  GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT , 1,  timer);
 }
 
+/*
+* push time to applet
+*/
 function render_time(){
+  let H,M,S;
+  H = h.toString();
+  M = m.toString();
+  S = s.toString();
+  H = H.length === 1 ? '0' + H : H;
+  M = M.length === 1 ? '0' + M : M;
+  S = S.length === 1 ? '0' + S : S;
+  shutdownTimerButton.time.text = H + ":" + M + ":" + S;
+}
+
+/*
+* decrease seconds and properly set other values
+*/
+function timer(){
   if (time === 0) {
     global.log('END');
     shutdown();
@@ -113,17 +133,13 @@ function render_time(){
   }
   s = s - 1;
   time = time - 1;
-  let H,M,S;
-  H = h.toString();
-  M = m.toString();
-  S = s.toString();
-  H = H.length === 1 ? '0' + H : H;
-  M = M.length === 1 ? '0' + M : M;
-  S = S.length === 1 ? '0' + S : S;
-  shutdownTimerButton.time.text = H + ":" + M + ":" + S;
+  render_time()
   return true;
 }
 
+/*
+* uses gnome session manager to shutdown the session with one minute prompt
+*/
 function shutdown(){
   global.log('lel')
   Main.overview.hide();
@@ -131,11 +147,18 @@ function shutdown(){
 	session.ShutdownRemote(0);
 }
 
+/*
+* First function called
+*/
 function init()
 {
   settings = Convenience.getSettings();
 }
 
+/*
+* Enable function
+* Initialization of applet, listen to settings
+*/
 function enable()
 {
   shutdownTimerButton = new ShutdownTimerButton();
@@ -147,6 +170,9 @@ function enable()
   settings.connect('changed::timer-start', start);
 }
 
+/*
+* destroy the applet
+*/
 function disable()
 {
   shutdownTimerButton.destroy()
