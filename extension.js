@@ -105,10 +105,10 @@ function onTimeUpdate(){
   if (set === SHUTDOWNAFTERTIME) {
     time = (h*3600 + m*60 + s);
   }
-  else {
-    
-
-  }
+  // else {
+  //
+  //
+  // }
   renderTime()
 }
 
