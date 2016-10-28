@@ -1,15 +1,19 @@
 const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
-
 const Gettext = imports.gettext.domain('AutomaticShutdownTimer');
 const _ = Gettext.gettext;
-
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = ExtensionUtils.getCurrentExtension();
 const Convenience = Extension.imports.convenience;
 const Pango = imports.gi.Pango;
 
+// options
+const SHUTDOWN = 0;
+const REBOOT = 1;
+const SUSPEND = 2;
+const SHUTDOWNAFTERTIME = 0;
+const SHUTDOWNONTIME = 1;
 let settings, widget;
 
 function init() {
@@ -36,16 +40,25 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         this.attach(new Gtk.Label({ label:'Shutdown:'}), 0, 0, 1, 1);
         //1st row
         let afterTime = new Gtk.RadioButton({label: 'after time expires'});
+        afterTime.connect('toggled', Lang.bind(this, function() {
+                settings.set_int('timer', SHUTDOWNAFTERTIME);
+        }));
         this.attach(afterTime, 2, 0, 2, 1);
 
-        let onTime = new Gtk.RadioButton({ group: afterTime,
-                                            label: 'on time'});
+        let onTime = new Gtk.RadioButton({group: afterTime,
+                                          label: 'on time'});
+        onTime.connect('toggled', Lang.bind(this, function() {
+                settings.set_int('timer', SHUTDOWNONTIME);
+        }));
         this.attach_next_to(onTime, afterTime, Gtk.PositionType.RIGHT, 2, 1);
-        //     radio.connect('toggled', Lang.bind(this, function(widget) {
-        //         if (widget.active)
-        //             this._settings.set_string(SETTINGS_APP_ICON_MODE, modeCapture);
-        //     }));
-        // grid.add(radio);
+
+        let timeSet = settings.get_int('timer')
+        if (timeSet === SHUTDOWNONTIME) {
+          onTime.active = true;
+        }
+        else{
+          afterTime.active = true;
+        }
 
         this.attach(new Gtk.HSeparator(), 0, 2, 6, 1);
         this.attach(new Gtk.Label({ label:'Time:'}), 0, 3, 1, 1);
@@ -146,15 +159,35 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         this.attach(new Gtk.Label({ label:'Action:'}), 0, 6, 1, 1);
         //4rd row
         let shutdownRbtn = new Gtk.RadioButton({label: 'Shutdown'});
+        shutdownRbtn.connect('toggled', Lang.bind(this, function() {
+                settings.set_int('action', SHUTDOWN);
+        }));
         this.attach(shutdownRbtn, 2, 6, 1, 1);
 
         let restartRbtn = new Gtk.RadioButton({ group: shutdownRbtn,
                                             label: 'Restart'});
+        restartRbtn.connect('toggled', Lang.bind(this, function() {
+                settings.set_int('action', REBOOT);
+        }));
         this.attach_next_to(restartRbtn, shutdownRbtn, Gtk.PositionType.RIGHT, 1, 1);
 
         let suspendRbtn = new Gtk.RadioButton({ group: shutdownRbtn,
                                             label: 'Suspend'});
+        suspendRbtn.connect('toggled', Lang.bind(this, function() {
+                settings.set_int('action', SUSPEND);
+        }));
         this.attach_next_to(suspendRbtn, restartRbtn, Gtk.PositionType.RIGHT, 1, 1);
+
+        let set = settings.get_int('action');
+        if (set === SHUTDOWN) {
+          shutdownRbtn.active = true;
+        }
+        else if (set === REBOOT) {
+          restartRbtn.active = true;
+        }
+        else if (set === SUSPEND) {
+          suspendRbtn.active = true;
+        }
 
         this.attach(new Gtk.HSeparator(), 0, 7, 6, 1);
         let start = new Gtk.Button ({label: "Start"});

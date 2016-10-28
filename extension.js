@@ -10,14 +10,21 @@ const Gir = imports.gi.GIRepository;
 const Lang = imports.lang;
 // shutdown functionality
 const GnomeSession = imports.misc.gnomeSession;
+const LoginManager = imports.misc.loginManager;
 //settings
 const Extension = imports.misc.extensionUtils.getCurrentExtension();
 const Convenience = Extension.imports.convenience;
 const Util = imports.misc.util;
 const GLib = imports.gi.GLib;
+//OPT
+const SHUTDOWN = 0;
+const REBOOT = 1;
+const SUSPEND = 2;
+const SHUTDOWNAFTERTIME = 0;
+const SHUTDOWNONTIME = 1;
 
 let shutdownTimerButton, settings, time, h, m, s;
-let isRunning = false
+let isRunning = false;
 
 const ShutdownTimerButton = new Lang.Class({
   Name: 'ShutdownTimerButton',
@@ -27,12 +34,11 @@ const ShutdownTimerButton = new Lang.Class({
    {
      this.parent(0.0, "Automatic Shutdown Timer");
 
-     this.button = new St.BoxLayout({ style_class: 'panel-button' });
-     this.icon = new St.Icon({ icon_name: 'org.gnome.clocks-symbolic',
-                             style_class: 'system-status-icon' });
-     this.time = new St.Label({ text: "00:00:00",
-                              style_class: 'timeLabel' });
-
+     let icon=Gio.icon_new_for_string(Extension.path + "/org.gnome.clocks-symbolic.svg");
+     this.button = new St.BoxLayout({ style_class: 'panel-button'});
+     this.icon = new St.Icon({ gicon: icon,
+                             style_class: 'system-status-icon'});
+     this.time = new St.Label({ style_class: 'timeLabel' });
      this.button.add_child(this.icon);
      this.button.add_child(this.time);
 
@@ -87,18 +93,26 @@ const ShutdownTimerButton = new Lang.Class({
 });
 //ShutdownTimerButton
 
-/*
+/**
 * get values from settings and render them immediately
 */
 function onTimeUpdate(){
+  let set = settings.get_int('timer')
   h = settings.get_int('hours-value');
   m = settings.get_int('minutes-value');
   s = settings.get_int('seconds-value');
-  time = (h*3600 + m*60 + s);
-  render_time()
+
+  if (set === SHUTDOWNAFTERTIME) {
+    time = (h*3600 + m*60 + s);
+  }
+  else {
+    
+
+  }
+  renderTime()
 }
 
-/*
+/**
 * start timer
 */
 function start(){
@@ -107,10 +121,10 @@ function start(){
   GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT , 1,  timer);
 }
 
-/*
+/**
 * push time to applet
 */
-function render_time(){
+function renderTime(){
   let H,M,S;
   H = h.toString();
   M = m.toString();
@@ -121,7 +135,7 @@ function render_time(){
   shutdownTimerButton.time.text = H + ":" + M + ":" + S;
 }
 
-/*
+/**
 * decrease seconds and properly set other values
 */
 function timer(){
@@ -129,7 +143,7 @@ function timer(){
     return false;
   }
   if (time === 0) {
-    shutdown();
+    doAction();
     return false;
   }
   if (s === 0) {
@@ -144,20 +158,56 @@ function timer(){
   }
   s = s - 1;
   time = time - 1;
-  render_time()
+  renderTime()
   return true;
 }
 
 /*
+* pick action from settings and call function
+*/
+function doAction(){
+  let action = settings.get_int('action');
+  switch (action) {
+    case SHUTDOWN:
+      shutdown();
+      break;
+    case REBOOT:
+      reboot();
+      break;
+    case SUSPEND:
+      suspend();
+      break;
+    default:
+
+  }
+}
+
+/**
 * uses gnome session manager to shutdown the session with one minute prompt
 */
 function shutdown(){
   Main.overview.hide();
 	let session = new GnomeSession.SessionManager();
-	session.ShutdownRemote(0);
+	session.ShutdownRemote();
 }
 
-/*
+/**
+* reboot via session
+*/
+function reboot(){
+  let session = new GnomeSession.SessionManager();
+	session.RebootRemote();
+}
+
+/**
+* suspend via login manager
+*/
+function suspend(){
+  let login = new LoginManager.getLoginManager();
+	login.suspend();
+}
+
+/**
 * First function called
 */
 function init()
@@ -165,7 +215,7 @@ function init()
   settings = Convenience.getSettings();
 }
 
-/*
+/**
 * Enable function
 * Initialization of applet, listen to settings
 */
@@ -178,9 +228,12 @@ function enable()
 	settings.connect('changed::hours-value', onTimeUpdate);
 	settings.connect('changed::minutes-value', onTimeUpdate);
   settings.connect('changed::timer-start', start);
+
+  onTimeUpdate();
+  renderTime();
 }
 
-/*
+/**
 * destroy the applet
 */
 function disable()
