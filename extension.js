@@ -10,6 +10,7 @@ const Gir = imports.gi.GIRepository;
 const Lang = imports.lang;
 // shutdown functionality
 const GnomeSession = imports.misc.gnomeSession;
+const GnomeDesktop = imports.gi.GnomeDesktop;
 const LoginManager = imports.misc.loginManager;
 //settings
 const Extension = imports.misc.extensionUtils.getCurrentExtension();
@@ -25,6 +26,7 @@ const SHUTDOWNONTIME = 1;
 
 let shutdownTimerButton, settings, time, h, m, s;
 let isRunning = false;
+let notified = true;
 
 const ShutdownTimerButton = new Lang.Class({
   Name: 'ShutdownTimerButton',
@@ -102,14 +104,14 @@ function onTimeUpdate(){
   m = settings.get_int('minutes-value');
   s = settings.get_int('seconds-value');
 
-  if (set === SHUTDOWNAFTERTIME) {
+  if (set === SHUTDOWNONTIME) {
+    global.log('zidan')
+    calculateTime();
+  }
+  else {
     time = (h*3600 + m*60 + s);
   }
-  // else {
-  //
-  //
-  // }
-  renderTime()
+  renderTime();
 }
 
 /**
@@ -117,11 +119,13 @@ function onTimeUpdate(){
 */
 function start(){
   global.log('AST: shutdown in s' + time.toString());
-  isRunning = true
+  isRunning = true;
+  notified = true;
   GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT , 1,  timer);
 }
 
 /**
+* working only with afterTime option
 * push time to applet
 */
 function renderTime(){
@@ -181,7 +185,30 @@ function doAction(){
 
   }
 }
-
+/**
+* Calculate the time difference only hours and minutes
+*/
+function calculateTime()
+{
+  time = (h*3600 + m*60);
+  // get current time
+  let t = new GnomeDesktop.WallClock();
+  let timeStr = t.clock.substring(t.clock.length - 6, t.clock.length);
+  let tmp = timeStr.match(/([0-9]{2})/gm);
+  //convert it to seconds
+  let currentTime = (tmp[0]*60*60) + tmp[1]*60;
+  // compare with entered value and calculate the result
+  if (time > currentTime) {
+    time = time - currentTime;
+  }
+  else{
+    time = (24*60*60) - currentTime + time;
+  }
+  //adjust values
+  h = Math.round(time/60/60);
+  m = Math.round(time/60%60);
+  s = 0;
+}
 /**
 * uses gnome session manager to shutdown the session with one minute prompt
 */

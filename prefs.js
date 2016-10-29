@@ -46,7 +46,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         this.attach(afterTime, 2, 0, 2, 1);
 
         let onTime = new Gtk.RadioButton({group: afterTime,
-                                          label: 'on time'});
+                                          label: 'on time(24h format)'});
         onTime.connect('toggled', Lang.bind(this, function() {
                 settings.set_int('timer', SHUTDOWNONTIME);
         }));
@@ -74,7 +74,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         let hours = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
         hours.set_increments(1, 1);
         hours.modify_font(Pango.font_description_from_string('30'))
-        hours.set_range(0, 99);
+        hours.set_range(0, 24);
         hours.set_value(0);
         hours.set_value(settings.get_int('minutes-value'));
         hours.set_wrap(true)
@@ -198,7 +198,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
           let w = this.get_window()
           w.destroy()
         }));
-        this.attach(start, 3, 8, 1, 1);
+        this.attach(start, 2, 8, 3, 1);
     }
 
 });
