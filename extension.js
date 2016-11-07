@@ -24,6 +24,8 @@ const SUSPEND = 2;
 const SHUTDOWNAFTERTIME = 0;
 const SHUTDOWNONTIME = 1;
 
+// remeber connect methods ids
+let hChangeEventId, mChangeEventId, sChangeEventId, startChangeEventId;
 let shutdownTimerButton, settings, time, h, m, s;
 let isRunning = false;
 let notified = true;
@@ -43,7 +45,6 @@ const ShutdownTimerButton = new Lang.Class({
      this.time = new St.Label({ style_class: 'timeLabel' });
      this.button.add_child(this.icon);
      this.button.add_child(this.time);
-
      this.actor.add_actor(this.button);
 
      this._buildMenu();
@@ -56,7 +57,6 @@ const ShutdownTimerButton = new Lang.Class({
 
       this.scrollViewMenuSection = new PopupMenu.PopupMenuSection();
       let scrollView = new St.ScrollView();
-
       scrollView.add_actor(this.popupMenu.actor);
       this.scrollViewMenuSection.actor.add_actor(scrollView);
       this.menu.addMenuItem(this.scrollViewMenuSection);
@@ -70,11 +70,11 @@ const ShutdownTimerButton = new Lang.Class({
       let pauseTimer = new PopupMenu.PopupMenuItem('Pause/Resume Timer');
       this.popupMenu.addMenuItem(pauseTimer, 1);
 
-      pauseTimer.connect('activate', Lang.bind(this, this._pause));
-      newTimer.connect('activate', Lang.bind(this, this._openSettings));
+      this.pauseId = pauseTimer.connect('activate', Lang.bind(this, this._pause));
+      this.openSettingsId = newTimer.connect('activate', Lang.bind(this, this._openSettings));
     },
 
-    _openSettings: function () {
+    _openSettings: function (){
       isRunning = false;
       onTimeUpdate()
       Util.spawn([
@@ -91,6 +91,11 @@ const ShutdownTimerButton = new Lang.Class({
         isRunning = true;
         start();
       }
+    },
+
+    _destroy: function(){
+      this.pauseTimer.disconnect(this.pauseId);
+      this.pauseTimer.disconnect(this.openSettingsId);
     }
 });
 //ShutdownTimerButton
@@ -185,17 +190,16 @@ function doAction(){
 
   }
 }
+
 /**
 * Calculate the time difference only hours and minutes
 */
 function calculateTime()
 {
-  time = (h*3600 + m*60);
-  // get current time
+  time = (h*3600 + m*60);                                   // get current time
   let t = new GnomeDesktop.WallClock();
   let timeStr = t.clock.substring(t.clock.length - 6, t.clock.length);
-  let tmp = timeStr.match(/([0-9]{2})/gm);
-  //convert it to seconds
+  let tmp = timeStr.match(/([0-9]{2})/gm);              //convert it to seconds
   let currentTime = (tmp[0]*60*60) + tmp[1]*60;
   // compare with entered value and calculate the result
   if (time > currentTime) {
@@ -209,6 +213,7 @@ function calculateTime()
   m = Math.round(time/60%60);
   s = 0;
 }
+
 /**
 * uses gnome session manager to shutdown the session with one minute prompt
 */
@@ -242,7 +247,6 @@ function init()
   settings = Convenience.getSettings();
 }
 
-let hChangeEventId, mChangeEventId, sChangeEventId, startChangeEventId;
 /**
 * Enable function
 * Initialization of applet, listen to settings

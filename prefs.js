@@ -28,16 +28,10 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     _init: function() {
         this.parent();
         this.margin = 12;
-
-        //this.row_homogeneous = true;
         this.column_homogeneous = true;
         this.row_spacing = this.column_spacing = 5;
-        // this.vexpand = true;
-        // this.hexpand = true;
-        // this.resize_mode = 0;
-
-       //this.set_orientation(Gtk.Orientation.VERTICAL);
         this.attach(new Gtk.Label({ label:'Shutdown:'}), 0, 0, 1, 1);
+
         //1st row
         let afterTime = new Gtk.RadioButton({label: 'after time expires'});
         afterTime.connect('toggled', Lang.bind(this, function() {
@@ -200,7 +194,6 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         }));
         this.attach(start, 2, 8, 3, 1);
     }
-
 });
 
 function buildPrefsWidget() {
