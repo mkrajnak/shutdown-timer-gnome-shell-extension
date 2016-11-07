@@ -242,6 +242,7 @@ function init()
   settings = Convenience.getSettings();
 }
 
+let hChangeEventId, mChangeEventId, sChangeEventId, startChangeEventId;
 /**
 * Enable function
 * Initialization of applet, listen to settings
@@ -251,12 +252,12 @@ function enable()
   shutdownTimerButton = new ShutdownTimerButton();
   Main.panel.addToStatusArea('shutdown-timer-button', shutdownTimerButton);
 
-  settings.connect('changed::seconds-value', onTimeUpdate);
-	settings.connect('changed::hours-value', onTimeUpdate);
-	settings.connect('changed::minutes-value', onTimeUpdate);
-  settings.connect('changed::timer-start', start);
+  hChangeEventId = settings.connect('changed::seconds-value', onTimeUpdate);
+	mChangeEventId = settings.connect('changed::hours-value', onTimeUpdate);
+	sChangeEventId = settings.connect('changed::minutes-value', onTimeUpdate);
+  startChangeEventId = settings.connect('changed::timer-start', start);
 
-  onTimeUpdate();
+  onTimeUpdate()
   renderTime();
 }
 
@@ -265,5 +266,9 @@ function enable()
 */
 function disable()
 {
+  settings.disconnect(hChangeEventId);
+  settings.disconnect(mChangeEventId);
+  settings.disconnect(sChangeEventId);
+  settings.disconnect(startChangeEventId);
   shutdownTimerButton.destroy()
 }
