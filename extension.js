@@ -25,10 +25,19 @@ const SHUTDOWNAFTERTIME = 0;
 const SHUTDOWNONTIME = 1;
 
 // remeber connect methods ids
-let hChangeEventId, mChangeEventId, sChangeEventId, startChangeEventId;
+let hChangeEventId, mChangeEventId, sChangeEventId, aChangeEventId, startChangeEventId;
 let shutdownTimerButton, settings, time, h, m, s;
 let isRunning = false;
 let notified = true;
+
+// Icons
+let icon_shutdown = Gio.icon_new_for_string(Extension.path + "/icons/system-shutdown.png");
+let icon_suspend = Gio.icon_new_for_string(Extension.path + "/icons/media-playback-pause.png");
+let icon_restart = Gio.icon_new_for_string(Extension.path + "/icons/view-refresh.png");
+// Icons objs
+let icon_shutdown_obj = new St.Icon({ gicon: icon_shutdown, style_class: 'system-status-icon'});
+let icon_suspend_obj = new St.Icon({ gicon: icon_suspend, style_class: 'system-status-icon'});
+let icon_restart_obj = new St.Icon({ gicon: icon_restart, style_class: 'system-status-icon'});
 
 const ShutdownTimerButton = new Lang.Class({
   Name: 'ShutdownTimerButton',
@@ -40,8 +49,7 @@ const ShutdownTimerButton = new Lang.Class({
 
      let icon=Gio.icon_new_for_string(Extension.path + "/org.gnome.clocks-symbolic.svg");
      this.button = new St.BoxLayout({ style_class: 'panel-button'});
-     this.icon = new St.Icon({ gicon: icon,
-                             style_class: 'system-status-icon'});
+     this.icon = icon_suspend_obj;
      this.time = new St.Label({ style_class: 'timeLabel' });
      this.button.add_child(this.icon);
      this.button.add_child(this.time);
@@ -118,6 +126,23 @@ function onTimeUpdate(){
   }
   renderTime();
 }
+
+/**
+* set correct icon
+*/
+function changeIcon(){
+  let action = settings.get_int('action');
+  switch (action) {
+    case SHUTDOWN:
+      shutdownTimerButton.icon = icon_shutdown_obj;
+    case REBOOT:
+      shutdownTimerButton.icon = icon_restart_obj;
+    case SUSPEND:
+      shutdownTimerButton.icon = icon_suspend_obj;
+    default:
+  }
+}
+
 
 /**
 * start timer
@@ -255,10 +280,11 @@ function enable()
 {
   shutdownTimerButton = new ShutdownTimerButton();
   Main.panel.addToStatusArea('shutdown-timer-button', shutdownTimerButton);
-
+  changeIcon();
   hChangeEventId = settings.connect('changed::seconds-value', onTimeUpdate);
 	mChangeEventId = settings.connect('changed::hours-value', onTimeUpdate);
 	sChangeEventId = settings.connect('changed::minutes-value', onTimeUpdate);
+  aChangeEventId = settings.connect('changed::action', changeIcon);
   startChangeEventId = settings.connect('changed::timer-start', start);
 
   onTimeUpdate()
@@ -273,6 +299,7 @@ function disable()
   settings.disconnect(hChangeEventId);
   settings.disconnect(mChangeEventId);
   settings.disconnect(sChangeEventId);
+  settings.disconnect(aChangeEventId);
   settings.disconnect(startChangeEventId);
   shutdownTimerButton.destroy()
 }
