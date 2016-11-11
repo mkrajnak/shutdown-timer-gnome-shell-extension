@@ -132,7 +132,6 @@ function onTimeUpdate(){
 * set correct icon
 */
 function changeIcon(){
-  global.log('zidan')
   let action = settings.get_int('action');
   switch (action) {
     case SHUTDOWN:
@@ -210,6 +209,7 @@ function timer(){
 * pick action from settings and call function
 */
 function doAction(){
+  onTimeUpdate();
   let action = settings.get_int('action');
   switch (action) {
     case SHUTDOWN:
