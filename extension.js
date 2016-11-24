@@ -8,6 +8,8 @@ const Gio = imports.gi.Gio;
 const Gtk = imports.gi.Gtk;
 const Gir = imports.gi.GIRepository;
 const Lang = imports.lang;
+const Meta = imports.gi.Meta;
+const Shell = imports.gi.Shell;
 // shutdown functionality
 const GnomeSession = imports.misc.gnomeSession;
 const GnomeDesktop = imports.gi.GnomeDesktop;
@@ -26,7 +28,7 @@ const SHUTDOWNONTIME = 1;
 
 // remeber connect methods ids
 let hChangeEventId, mChangeEventId, sChangeEventId, aChangeEventId, startChangeEventId;
-let shutdownTimerButton, settings, time, h, m, s;
+let tChangeEventId, shutdownTimerButton, settings, time, h, m, s;
 let isRunning = false;
 let notified = true;
 
@@ -37,6 +39,7 @@ const ShutdownTimerButton = new Lang.Class({
    _init: function ()
    {
      this.parent(0.0, "Automatic Shutdown Timer");
+     this._shortcutsBindingIds = [];
 
      this.button = new St.BoxLayout({ style_class: 'panel-button'});
      this.time = new St.Label({ style_class: 'timeLabel' });
@@ -96,9 +99,39 @@ const ShutdownTimerButton = new Lang.Class({
     },
 
     _destroy: function(){
+      this._unbindShortcuts()
       this.pauseTimer.disconnect(this.pauseId);
       this.pauseTimer.disconnect(this.openSettingsId);
-    }
+    },
+
+    // Shortcut code borrowed from clipboard-indicator extension
+    _bindShortcuts: function () {
+      this._unbindShortcuts();
+      this._bindShortcut('shortcut', this._pause);  //bind shotcut to callback
+    },
+
+    _unbindShortcuts: function () {
+        this._shortcutsBindingIds.forEach(
+            (id) => Main.wm.removeKeybinding(id)
+        );
+
+        this._shortcutsBindingIds = [];
+    },
+
+    _bindShortcut: function(name, cb) {
+        var ModeType = Shell.hasOwnProperty('ActionMode') ?
+            Shell.ActionMode : Shell.KeyBindingMode;
+
+      Main.wm.addKeybinding(
+          name,
+          settings,
+          Meta.KeyBindingFlags.NONE,
+          ModeType.ALL,
+          Lang.bind(this, cb)
+      );
+
+      this._shortcutsBindingIds.push(name);
+  }
 });
 //ShutdownTimerButton
 
@@ -106,7 +139,7 @@ const ShutdownTimerButton = new Lang.Class({
 * get values from settings and render them immediately
 */
 function onTimeUpdate(){
-  let set = settings.get_int('timer')
+  let set = settings.get_int('timer');
   h = settings.get_int('hours-value');
   m = settings.get_int('minutes-value');
   s = settings.get_int('seconds-value');
@@ -143,7 +176,6 @@ function changeIcon(){
       break;
   }
 }
-
 
 /**
 * start timer
@@ -234,7 +266,7 @@ function calculateTime()
     time = time - currentTime;
   }
   else{
-    time = (24*60*60) - currentTime + time;
+    time = 24*3600 - currentTime + time;
   }
   //adjust values
   h = Math.round(time/60/60);
@@ -294,6 +326,7 @@ function enable()
   tChangeEventId = settings.connect('changed::timer', onTimeUpdate);
   startChangeEventId = settings.connect('changed::timer-start', start);
 
+  shutdownTimerButton._bindShortcuts();
   changeIcon();
   onTimeUpdate();
   renderTime();
@@ -308,6 +341,8 @@ function disable()
   settings.disconnect(mChangeEventId);
   settings.disconnect(sChangeEventId);
   settings.disconnect(aChangeEventId);
+  settings.disconnect(tChangeEventId);
+
   settings.disconnect(startChangeEventId);
   shutdownTimerButton.destroy()
 }

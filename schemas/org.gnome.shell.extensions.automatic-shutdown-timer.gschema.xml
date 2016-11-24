@@ -32,6 +32,12 @@
       <description>Choose whether the action is made on time or after time</description>
     </key>
 
+    <key type="as" name="shortcut">
+      <default><![CDATA[['<Ctrl><Shift>Space']]]></default>
+      <summary>Start/Pause shutdown timer</summary>
+      <description>Start/Pause timer</description>
+    </key>
+
     <key type="b" name="timer-start">
       <default>false</default>
       <summary>Start timer</summary>
