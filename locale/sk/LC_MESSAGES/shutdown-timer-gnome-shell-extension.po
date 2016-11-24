@@ -17,47 +17,47 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Gtranslator 2.91.6\n"
 
-#: prefs.js:34
+#: prefs.js:38
 msgid "Shutdown:"
 msgstr "Vypnúť:"
 
-#: prefs.js:37
+#: prefs.js:41
 msgid "after time expires"
 msgstr "po vypšaní času"
 
-#: prefs.js:44
+#: prefs.js:47
 msgid "on time(24h format)"
 msgstr "v čase (24h formát)"
 
-#: prefs.js:61
+#: prefs.js:65
 msgid " Hours "
-msgstr "Hodina"
+msgstr "Hodiny"
 
-#: prefs.js:62
+#: prefs.js:66
 msgid "Minutes"
-msgstr "Minúta"
+msgstr "Minúty"
 
-#: prefs.js:63
+#: prefs.js:67
 msgid "Seconds"
 msgstr "Sekundy"
 
-#: prefs.js:156
+#: prefs.js:160
 msgid "Shutdown"
 msgstr "Sekundy"
 
-#: prefs.js:163
+#: prefs.js:167
 msgid "Restart"
 msgstr "Reštartovať"
 
-#: prefs.js:169
+#: prefs.js:173
 msgid "Suspend"
 msgstr "Uspať"
 
-#: prefs.js:189
+#: prefs.js:196
 msgid "Shortcut:"
 msgstr "Skratka:"
 
-#: prefs.js:192
+#: prefs.js:200
 msgid "Start/Stop Timer"
 msgstr "štart/pauza časovača"
 
