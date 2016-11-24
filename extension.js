@@ -63,15 +63,8 @@ const ShutdownTimerButton = new Lang.Class({
 
       // Create menu section for items
       this.popupMenu = new PopupMenu.PopupMenuSection();
+      this.menu.addMenuItem(this.popupMenu);
 
-      this.scrollViewMenuSection = new PopupMenu.PopupMenuSection();
-      let scrollView = new St.ScrollView();
-      scrollView.add_actor(this.popupMenu.actor);
-      this.scrollViewMenuSection.actor.add_actor(scrollView);
-      this.menu.addMenuItem(this.scrollViewMenuSection);
-
-      // Add separator
-      this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
       // First Item
       let newTimer = new PopupMenu.PopupMenuItem('New Timer');
       this.popupMenu.addMenuItem(newTimer, 0);
