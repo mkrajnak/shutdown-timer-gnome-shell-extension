@@ -287,7 +287,11 @@ function enable()
   hChangeEventId = settings.connect('changed::seconds-value', onTimeUpdate);
 	mChangeEventId = settings.connect('changed::hours-value', onTimeUpdate);
 	sChangeEventId = settings.connect('changed::minutes-value', onTimeUpdate);
+
+  //listen to user changes action after time expires
   aChangeEventId = settings.connect('changed::action', changeIcon);
+  // listen to change of timer type
+  tChangeEventId = settings.connect('changed::timer', onTimeUpdate);
   startChangeEventId = settings.connect('changed::timer-start', start);
 
   changeIcon();
