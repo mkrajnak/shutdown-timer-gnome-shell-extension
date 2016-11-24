@@ -308,7 +308,7 @@ function suspend(){
 function init()
 {
   settings = Convenience.getSettings();
-  let localeDir = Me.dir.get_child('locale');
+  let localeDir = Extension.dir.get_child('locale');
   Gettext.bindtextdomain('shutdown-timer-gnome-shell-extension', localeDir.get_path());
 }
 

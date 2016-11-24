@@ -2,8 +2,10 @@ const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
 const Gio = imports.gi.Gio;
 const Lang = imports.lang;
-const Gettext = imports.gettext.domain('AutomaticShutdownTimer');
-const _ = Gettext.gettext;
+// init translation
+const Gettext = imports.gettext;
+const _ = Gettext.domain('shutdown-timer-gnome-shell-extension').gettext;
+// Utils
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = ExtensionUtils.getCurrentExtension();
 const Convenience = Extension.imports.convenience;
@@ -19,6 +21,8 @@ let settings, widget;
 
 function init() {
     settings = Convenience.getSettings();
+    let localeDir = Extension.dir.get_child('locale');
+    Gettext.bindtextdomain('shutdown-timer-gnome-shell-extension', localeDir.get_path());
 }
 
 const AutomaticShutdownTimerPrefs = new GObject.Class({
