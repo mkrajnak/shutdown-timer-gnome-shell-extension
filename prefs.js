@@ -60,7 +60,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         }
 
         this.attach(new Gtk.HSeparator(), 0, 2, 6, 1);
-        this.attach(new Gtk.Label({ label:'Time:'}), 0, 3, 1, 1);
+        this.attach(new Gtk.Label({ label: _("Time:")}), 0, 3, 1, 1);
         //2nd row
         let hour_label = new Gtk.Label({ label: _(" Hours ")});
         let min_label = new Gtk.Label({ label: _("Minutes")});
@@ -155,7 +155,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         this.attach_next_to(seconds, minutes, Gtk.PositionType.RIGHT, 1, 1);
 
         this.attach(new Gtk.HSeparator(), 0, 5, 6, 1);
-        this.attach(new Gtk.Label({ label:'Action:'}), 0, 6, 1, 1);
+        this.attach(new Gtk.Label({ label: _("Action:")}), 0, 6, 1, 1);
         //4rd row
         let shutdownRbtn = new Gtk.RadioButton({label: _("Shutdown")});
         shutdownRbtn.connect('toggled', Lang.bind(this, function() {

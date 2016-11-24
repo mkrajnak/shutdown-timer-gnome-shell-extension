@@ -29,6 +29,10 @@ msgstr "po vypšaní času"
 msgid "on time(24h format)"
 msgstr "v čase (24h formát)"
 
+#: prefs.js:63
+msgid "Time:"
+msgstr "Čas:"
+
 #: prefs.js:65
 msgid " Hours "
 msgstr "Hodiny"
@@ -41,9 +45,13 @@ msgstr "Minúty"
 msgid "Seconds"
 msgstr "Sekundy"
 
+#: prefs.js:158
+msgid "Action:"
+msgstr "Akcia:"
+
 #: prefs.js:160
 msgid "Shutdown"
-msgstr "Sekundy"
+msgstr "Vypnúť"
 
 #: prefs.js:167
 msgid "Restart"
