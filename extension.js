@@ -19,6 +19,9 @@ const Extension = imports.misc.extensionUtils.getCurrentExtension();
 const Convenience = Extension.imports.convenience;
 const Util = imports.misc.util;
 const GLib = imports.gi.GLib;
+// init translation
+const Gettext = imports.gettext;
+const _ = Gettext.domain('shutdown-timer-gnome-shell-extension').gettext;
 //OPT
 const SHUTDOWN = 0;
 const REBOOT = 1;
@@ -305,6 +308,8 @@ function suspend(){
 function init()
 {
   settings = Convenience.getSettings();
+  let localeDir = Me.dir.get_child('locale');
+  Gettext.bindtextdomain('shutdown-timer-gnome-shell-extension', localeDir.get_path());
 }
 
 /**
