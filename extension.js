@@ -38,7 +38,7 @@ const ShutdownTimerButton = new Lang.Class({
 
    _init: function ()
    {
-     this.parent(0.0, "Automatic Shutdown Timer");
+     this.parent(0.0, _("Shutdown Timer"));
      this._shortcutsBindingIds = [];
 
      this.button = new St.BoxLayout({ style_class: 'panel-button'});
@@ -69,10 +69,10 @@ const ShutdownTimerButton = new Lang.Class({
       this.menu.addMenuItem(this.popupMenu);
 
       // First Item
-      let newTimer = new PopupMenu.PopupMenuItem('New Timer');
+      let newTimer = new PopupMenu.PopupMenuItem( _("New Timer"));
       this.popupMenu.addMenuItem(newTimer, 0);
       // Second Item
-      let pauseTimer = new PopupMenu.PopupMenuItem('Pause/Resume Timer');
+      let pauseTimer = new PopupMenu.PopupMenuItem(_("Pause/Resume Timer"));
       this.popupMenu.addMenuItem(pauseTimer, 1);
 
       this.pauseId = pauseTimer.connect('activate', Lang.bind(this, this._pause));

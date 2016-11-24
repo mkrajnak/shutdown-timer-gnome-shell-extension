@@ -31,17 +31,17 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         this.margin = 12;
         this.column_homogeneous = true;
         this.row_spacing = this.column_spacing = 5;
-        this.attach(new Gtk.Label({ label:'Shutdown:'}), 0, 0, 1, 1);
+        this.attach(new Gtk.Label({ label: _("Shutdown:") }), 0, 0, 1, 1);
 
         //1st row
-        let afterTime = new Gtk.RadioButton({label: 'after time expires'});
+        let afterTime = new Gtk.RadioButton({label: _("after time expires")});
         afterTime.connect('toggled', Lang.bind(this, function() {
                 settings.set_int('timer', SHUTDOWNAFTERTIME);
         }));
         this.attach(afterTime, 2, 0, 2, 1);
 
         let onTime = new Gtk.RadioButton({group: afterTime,
-                                          label: 'on time(24h format)'});
+                                          label: _("on time(24h format)")});
         onTime.connect('toggled', Lang.bind(this, function() {
                 settings.set_int('timer', SHUTDOWNONTIME);
         }));
@@ -58,9 +58,9 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         this.attach(new Gtk.HSeparator(), 0, 2, 6, 1);
         this.attach(new Gtk.Label({ label:'Time:'}), 0, 3, 1, 1);
         //2nd row
-        let hour_label = new Gtk.Label({ label:' Hours '});
-        let min_label = new Gtk.Label({ label: 'Minutes'});
-        let sec_label = new Gtk.Label({ label: 'Seconds'});
+        let hour_label = new Gtk.Label({ label: _(" Hours ")});
+        let min_label = new Gtk.Label({ label: _("Minutes")});
+        let sec_label = new Gtk.Label({ label: _("Seconds")});
         this.attach(hour_label, 2, 3, 1, 1);
         this.attach_next_to(min_label, hour_label, Gtk.PositionType.RIGHT, 1, 1);
         this.attach_next_to(sec_label, min_label, Gtk.PositionType.RIGHT, 1, 1);
@@ -153,21 +153,21 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         this.attach(new Gtk.HSeparator(), 0, 5, 6, 1);
         this.attach(new Gtk.Label({ label:'Action:'}), 0, 6, 1, 1);
         //4rd row
-        let shutdownRbtn = new Gtk.RadioButton({label: 'Shutdown'});
+        let shutdownRbtn = new Gtk.RadioButton({label: _("Shutdown")});
         shutdownRbtn.connect('toggled', Lang.bind(this, function() {
                 settings.set_int('action', SHUTDOWN);
         }));
         this.attach(shutdownRbtn, 2, 6, 1, 1);
 
         let restartRbtn = new Gtk.RadioButton({ group: shutdownRbtn,
-                                            label: 'Restart'});
+                                            label: _("Restart")});
         restartRbtn.connect('toggled', Lang.bind(this, function() {
                 settings.set_int('action', REBOOT);
         }));
         this.attach_next_to(restartRbtn, shutdownRbtn, Gtk.PositionType.RIGHT, 1, 1);
 
         let suspendRbtn = new Gtk.RadioButton({ group: shutdownRbtn,
-                                            label: 'Suspend'});
+                                            label: _("Suspend")});
         suspendRbtn.connect('toggled', Lang.bind(this, function() {
                 settings.set_int('action', SUSPEND);
         }));
@@ -186,14 +186,14 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
         this.attach(new Gtk.HSeparator(), 0, 7, 6, 1);
 
-        this.attach(new Gtk.Label({ label:'Shortcut:'}), 0, 8, 1, 1);
+        this.attach(new Gtk.Label({ label: _("Shortcut:")}), 0, 8, 1, 1);
         let field_keybinding = createKeybindingWidget(settings);
         addKeybinding(field_keybinding.model, settings, "shortcut",
                       _("Start/Stop Timer"));
         this.attach(field_keybinding, 2, 8 , 3, 1);
 
         this.attach(new Gtk.HSeparator(), 0, 9, 6, 1);
-        let start = new Gtk.Button ({label: "Start"});
+        let start = new Gtk.Button ({label: _("Start")});
 
         start.connect('clicked', Lang.bind(this, function(){
           global.log(!settings.get_boolean('timer-start'))
