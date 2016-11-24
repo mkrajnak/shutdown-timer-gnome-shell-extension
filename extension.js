@@ -112,7 +112,6 @@ function onTimeUpdate(){
   s = settings.get_int('seconds-value');
 
   if (set === SHUTDOWNONTIME) {
-    global.log('zidan')
     calculateTime();
   }
   else {
@@ -179,6 +178,7 @@ function timer(){
     return false;
   }
   if (time === 0) {
+    isRunning = false;
     doAction();
     return false;
   }
@@ -283,11 +283,13 @@ function enable()
 {
   shutdownTimerButton = new ShutdownTimerButton();
   Main.panel.addToStatusArea('shutdown-timer-button', shutdownTimerButton);
+
   hChangeEventId = settings.connect('changed::seconds-value', onTimeUpdate);
 	mChangeEventId = settings.connect('changed::hours-value', onTimeUpdate);
 	sChangeEventId = settings.connect('changed::minutes-value', onTimeUpdate);
   aChangeEventId = settings.connect('changed::action', changeIcon);
   startChangeEventId = settings.connect('changed::timer-start', start);
+
   changeIcon();
   onTimeUpdate();
   renderTime();
