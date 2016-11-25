@@ -22,6 +22,8 @@ const GLib = imports.gi.GLib;
 // init translation
 const Gettext = imports.gettext;
 const _ = Gettext.domain('shutdown-timer-gnome-shell-extension').gettext;
+// notification
+const MessageTray = imports.ui.main.messageTray;
 //OPT
 const SHUTDOWN = 0;
 const REBOOT = 1;
@@ -33,7 +35,7 @@ const SHUTDOWNONTIME = 1;
 let hChangeEventId, mChangeEventId, sChangeEventId, aChangeEventId, startChangeEventId;
 let tChangeEventId, shutdownTimerButton, settings, time, h, m, s;
 let isRunning = false;
-let notified = true;
+let notified = false;
 
 const ShutdownTimerButton = new Lang.Class({
   Name: 'ShutdownTimerButton',
@@ -187,7 +189,7 @@ function changeIcon(){
 function start(){
   global.log('AST: shutdown in s' + time.toString());
   isRunning = true;
-  notified = true;
+  notified = false;
   GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT , 1,  timer);
 }
 
@@ -212,6 +214,9 @@ function renderTime(){
 function timer(){
   if (!isRunning) {
     return false;
+  }
+  if (time < 600 && !notified) {
+    send_notification()
   }
   if (time === 0) {
     isRunning = false;
@@ -250,8 +255,7 @@ function doAction(){
     case SUSPEND:
       suspend();
       break;
-    default:
-
+    default: break; // nothing
   }
 }
 
@@ -276,6 +280,26 @@ function calculateTime()
   h = Math.round(time/60/60);
   m = Math.round(time/60%60);
   s = 0;
+}
+
+/**
+* Send notification to shell
+*/
+function send_notification() {
+  notified = true;
+  let action = settings.get_int('action');
+  switch (action) {
+    case SHUTDOWN:
+      Main.notify('Shutdown in less than 3 minutes');
+      break;
+    case REBOOT:
+      Main.notify('Reboot in less than 3 minutes');
+      break;
+    case SUSPEND:
+      Main.notify('Suspend in less than 3 minutes');
+      break;
+    default: break;
+  }
 }
 
 /**
