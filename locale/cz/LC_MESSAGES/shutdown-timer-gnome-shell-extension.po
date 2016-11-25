@@ -19,11 +19,11 @@ msgstr ""
 
 #: prefs.js:38
 msgid "Shutdown:"
-msgstr "Vypnúť:"
+msgstr "Vypnout:"
 
 #: prefs.js:41
 msgid "after time expires"
-msgstr "po vypšaní času"
+msgstr "po vypršení času"
 
 #: prefs.js:47
 msgid "on time(24h format)"
@@ -39,7 +39,7 @@ msgstr "Hodiny"
 
 #: prefs.js:66
 msgid "Minutes"
-msgstr "Minúty"
+msgstr "Minuty"
 
 #: prefs.js:67
 msgid "Seconds"
@@ -47,35 +47,35 @@ msgstr "Sekundy"
 
 #: prefs.js:158
 msgid "Action:"
-msgstr "Akcia:"
+msgstr "Akce:"
 
 #: prefs.js:160
 msgid "Shutdown"
-msgstr "Vypnúť"
+msgstr "Vypnout"
 
 #: prefs.js:167
 msgid "Restart"
-msgstr "Reštartovať"
+msgstr "Restartovat"
 
 #: prefs.js:173
 msgid "Suspend"
-msgstr "Uspať"
+msgstr "Uspat"
 
 #: prefs.js:196
 msgid "Shortcut:"
-msgstr "Skratka:"
+msgstr "Zkratka:"
 
 #: prefs.js:200
 msgid "Start/Stop Timer"
-msgstr "štart/pauza časovača"
+msgstr "start/pauza časovače"
 
 #: prefs.js:192
 msgid "Start"
-msgstr "Štart"
+msgstr "Start"
 
 #+: extension.js:41
 msgid "Shutdown Timer"
-msgstr "Časovač vypnutia"
+msgstr "Časovač vypnutí"
 
 #+: extension.js:72
 msgid "New Timer"
@@ -83,4 +83,4 @@ msgstr "Nový časovač"
 
 #+: extension.js:75
 msgid "Pause/Resume Timer"
-msgstr "Pozastaviť/Spustiť časovač"
+msgstr "Pozastavit/Spustit časovač"
