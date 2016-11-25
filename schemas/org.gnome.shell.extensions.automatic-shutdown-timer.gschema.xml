@@ -43,5 +43,12 @@
       <summary>Start timer</summary>
       <description>Start new timer</description>
     </key>
+
+    <key type="as" name="option">
+      <default><![CDATA[['<Ctrl>F8']]]></default>
+      <summary>Start/Pause shutdown timer</summary>
+      <description>Start/Pause timer</description>
+    </key>
+
   </schema>
 </schemalist>

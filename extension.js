@@ -109,8 +109,9 @@ const ShutdownTimerButton = new Lang.Class({
 
     // Shortcut code borrowed from clipboard-indicator extension
     _bindShortcuts: function () {
-      this._unbindShortcuts();
-      this._bindShortcut('shortcut', this._pause);  //bind shotcut to callback
+      this._unbindShortcuts();                          // clear and get ready to bind callback
+      this._bindShortcut('shortcut', this._pause);      //Timer start
+      this._bindShortcut('option', this._openSettings); // settings
     },
 
     _unbindShortcuts: function () {

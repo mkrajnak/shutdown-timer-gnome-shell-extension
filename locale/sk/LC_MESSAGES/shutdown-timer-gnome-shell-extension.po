@@ -23,7 +23,7 @@ msgstr "Vypnúť:"
 
 #: prefs.js:41
 msgid "after time expires"
-msgstr "po vypšaní času"
+msgstr "po vypršaní času"
 
 #: prefs.js:47
 msgid "on time(24h format)"
@@ -62,7 +62,7 @@ msgid "Suspend"
 msgstr "Uspať"
 
 #: prefs.js:196
-msgid "Shortcut:"
+msgid "Shortcuts:"
 msgstr "Skratka:"
 
 #: prefs.js:200

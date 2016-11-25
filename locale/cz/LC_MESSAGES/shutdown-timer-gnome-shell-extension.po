@@ -62,7 +62,7 @@ msgid "Suspend"
 msgstr "Uspat"
 
 #: prefs.js:196
-msgid "Shortcut:"
+msgid "Shortcuts:"
 msgstr "Zkratka:"
 
 #: prefs.js:200

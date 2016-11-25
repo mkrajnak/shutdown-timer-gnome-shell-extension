@@ -189,12 +189,20 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         }
 
         this.attach(new Gtk.HSeparator(), 0, 7, 6, 1);
+        this.attach(new Gtk.Label({ label: _("Shortcuts:")}), 0, 8, 1, 1);
 
-        this.attach(new Gtk.Label({ label: _("Shortcut:")}), 0, 8, 1, 1);
         let field_keybinding = createKeybindingWidget(settings);
+
         addKeybinding(field_keybinding.model, settings, "shortcut",
                       _("Start/Stop Timer"));
+        addKeybinding(field_keybinding.model, settings, "option",
+                      _("Open options"));
         this.attach(field_keybinding, 2, 8 , 3, 1);
+
+        this.field_keybinding_activation = new Gtk.Switch();
+        this.field_keybinding_activation.connect("notify::active", function(widget){
+            this.field_keybinding.set_sensitive(widget.active);
+        });
 
         this.attach(new Gtk.HSeparator(), 0, 9, 6, 1);
         let start = new Gtk.Button ({label: _("Start")});
