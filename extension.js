@@ -8,6 +8,8 @@ const Gio = imports.gi.Gio;
 const Gtk = imports.gi.Gtk;
 const Gir = imports.gi.GIRepository;
 const Lang = imports.lang;
+const Meta = imports.gi.Meta;
+const Shell = imports.gi.Shell;
 // shutdown functionality
 const GnomeSession = imports.misc.gnomeSession;
 const GnomeDesktop = imports.gi.GnomeDesktop;
@@ -17,6 +19,9 @@ const Extension = imports.misc.extensionUtils.getCurrentExtension();
 const Convenience = Extension.imports.convenience;
 const Util = imports.misc.util;
 const GLib = imports.gi.GLib;
+// init translation
+const Gettext = imports.gettext;
+const _ = Gettext.domain('shutdown-timer-gnome-shell-extension').gettext;
 //OPT
 const SHUTDOWN = 0;
 const REBOOT = 1;
@@ -26,7 +31,7 @@ const SHUTDOWNONTIME = 1;
 
 // remeber connect methods ids
 let hChangeEventId, mChangeEventId, sChangeEventId, aChangeEventId, startChangeEventId;
-let shutdownTimerButton, settings, time, h, m, s;
+let tChangeEventId, shutdownTimerButton, settings, time, h, m, s;
 let isRunning = false;
 let notified = true;
 
@@ -36,7 +41,8 @@ const ShutdownTimerButton = new Lang.Class({
 
    _init: function ()
    {
-     this.parent(0.0, "Automatic Shutdown Timer");
+     this.parent(0.0, _("Shutdown Timer"));
+     this._shortcutsBindingIds = [];
 
      this.button = new St.BoxLayout({ style_class: 'panel-button'});
      this.time = new St.Label({ style_class: 'timeLabel' });
@@ -66,10 +72,10 @@ const ShutdownTimerButton = new Lang.Class({
       this.menu.addMenuItem(this.popupMenu);
 
       // First Item
-      let newTimer = new PopupMenu.PopupMenuItem('New Timer');
+      let newTimer = new PopupMenu.PopupMenuItem( _("New Timer"));
       this.popupMenu.addMenuItem(newTimer, 0);
       // Second Item
-      let pauseTimer = new PopupMenu.PopupMenuItem('Pause/Resume Timer');
+      let pauseTimer = new PopupMenu.PopupMenuItem(_("Pause/Resume Timer"));
       this.popupMenu.addMenuItem(pauseTimer, 1);
 
       this.pauseId = pauseTimer.connect('activate', Lang.bind(this, this._pause));
@@ -96,9 +102,40 @@ const ShutdownTimerButton = new Lang.Class({
     },
 
     _destroy: function(){
+      this._unbindShortcuts()
       this.pauseTimer.disconnect(this.pauseId);
       this.pauseTimer.disconnect(this.openSettingsId);
-    }
+    },
+
+    // Shortcut code borrowed from clipboard-indicator extension
+    _bindShortcuts: function () {
+      this._unbindShortcuts();                          // clear and get ready to bind callback
+      this._bindShortcut('shortcut', this._pause);      //Timer start
+      this._bindShortcut('option', this._openSettings); // settings
+    },
+
+    _unbindShortcuts: function () {
+        this._shortcutsBindingIds.forEach(
+            (id) => Main.wm.removeKeybinding(id)
+        );
+
+        this._shortcutsBindingIds = [];
+    },
+
+    _bindShortcut: function(name, cb) {
+        var ModeType = Shell.hasOwnProperty('ActionMode') ?
+            Shell.ActionMode : Shell.KeyBindingMode;
+
+      Main.wm.addKeybinding(
+          name,
+          settings,
+          Meta.KeyBindingFlags.NONE,
+          ModeType.ALL,
+          Lang.bind(this, cb)
+      );
+
+      this._shortcutsBindingIds.push(name);
+  }
 });
 //ShutdownTimerButton
 
@@ -106,13 +143,12 @@ const ShutdownTimerButton = new Lang.Class({
 * get values from settings and render them immediately
 */
 function onTimeUpdate(){
-  let set = settings.get_int('timer')
+  let set = settings.get_int('timer');
   h = settings.get_int('hours-value');
   m = settings.get_int('minutes-value');
   s = settings.get_int('seconds-value');
 
   if (set === SHUTDOWNONTIME) {
-    global.log('zidan')
     calculateTime();
   }
   else {
@@ -144,7 +180,6 @@ function changeIcon(){
       break;
   }
 }
-
 
 /**
 * start timer
@@ -179,6 +214,7 @@ function timer(){
     return false;
   }
   if (time === 0) {
+    isRunning = false;
     doAction();
     return false;
   }
@@ -234,7 +270,7 @@ function calculateTime()
     time = time - currentTime;
   }
   else{
-    time = (24*60*60) - currentTime + time;
+    time = 24*3600 - currentTime + time;
   }
   //adjust values
   h = Math.round(time/60/60);
@@ -273,6 +309,8 @@ function suspend(){
 function init()
 {
   settings = Convenience.getSettings();
+  let localeDir = Extension.dir.get_child('locale');
+  Gettext.bindtextdomain('shutdown-timer-gnome-shell-extension', localeDir.get_path());
 }
 
 /**
@@ -283,11 +321,18 @@ function enable()
 {
   shutdownTimerButton = new ShutdownTimerButton();
   Main.panel.addToStatusArea('shutdown-timer-button', shutdownTimerButton);
+
   hChangeEventId = settings.connect('changed::seconds-value', onTimeUpdate);
 	mChangeEventId = settings.connect('changed::hours-value', onTimeUpdate);
 	sChangeEventId = settings.connect('changed::minutes-value', onTimeUpdate);
+
+  //listen to user changes action after time expires
   aChangeEventId = settings.connect('changed::action', changeIcon);
+  // listen to change of timer type
+  tChangeEventId = settings.connect('changed::timer', onTimeUpdate);
   startChangeEventId = settings.connect('changed::timer-start', start);
+
+  shutdownTimerButton._bindShortcuts();
   changeIcon();
   onTimeUpdate();
   renderTime();
@@ -302,6 +347,8 @@ function disable()
   settings.disconnect(mChangeEventId);
   settings.disconnect(sChangeEventId);
   settings.disconnect(aChangeEventId);
+  settings.disconnect(tChangeEventId);
+
   settings.disconnect(startChangeEventId);
   shutdownTimerButton.destroy()
 }

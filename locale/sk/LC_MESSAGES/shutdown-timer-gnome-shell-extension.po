@@ -1,0 +1,86 @@
+# Slovak translation for shutdown-timer-gnome-shell-extension.
+# Copyright (C) 2016, Martin Krajnak
+# This file is distributed under the same license as the shutdown-timer-gnome-shell-extension package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-11-24 16:21+0200\n"
+"PO-Revision-Date: 2016-11-24 16:15+0200\n"
+"Last-Translator:  Martin Krajnak <krajnakmatto@gmail.com>\n"
+"Language-Team: Slovak <krajnakmatto@gmail.com>\n"
+"Language: sk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 2.91.6\n"
+
+#: prefs.js:38
+msgid "Shutdown:"
+msgstr "Vypnúť:"
+
+#: prefs.js:41
+msgid "after time expires"
+msgstr "po vypršaní času"
+
+#: prefs.js:47
+msgid "on time(24h format)"
+msgstr "v čase (24h formát)"
+
+#: prefs.js:63
+msgid "Time:"
+msgstr "Čas:"
+
+#: prefs.js:65
+msgid " Hours "
+msgstr "Hodiny"
+
+#: prefs.js:66
+msgid "Minutes"
+msgstr "Minúty"
+
+#: prefs.js:67
+msgid "Seconds"
+msgstr "Sekundy"
+
+#: prefs.js:158
+msgid "Action:"
+msgstr "Akcia:"
+
+#: prefs.js:160
+msgid "Shutdown"
+msgstr "Vypnúť"
+
+#: prefs.js:167
+msgid "Restart"
+msgstr "Reštartovať"
+
+#: prefs.js:173
+msgid "Suspend"
+msgstr "Uspať"
+
+#: prefs.js:196
+msgid "Shortcuts:"
+msgstr "Skratka:"
+
+#: prefs.js:200
+msgid "Start/Stop Timer"
+msgstr "štart/pauza časovača"
+
+#: prefs.js:192
+msgid "Start"
+msgstr "Štart"
+
+#+: extension.js:41
+msgid "Shutdown Timer"
+msgstr "Časovač vypnutia"
+
+#+: extension.js:72
+msgid "New Timer"
+msgstr "Nový časovač"
+
+#+: extension.js:75
+msgid "Pause/Resume Timer"
+msgstr "Pozastaviť/Spustiť časovač"
