@@ -178,6 +178,7 @@ function changeIcon(){
       shutdownTimerButton.icon_shutdown_obj.hide()
       shutdownTimerButton.icon_suspend_obj.show()
       break;
+    default: break; // nothing
   }
 }
 
