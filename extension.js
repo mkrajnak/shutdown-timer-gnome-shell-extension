@@ -297,13 +297,13 @@ function send_notification() {
   let action = settings.get_int('action');
   switch (action) {
     case SHUTDOWN:
-      Main.notify('Shutdown in less than one minute');
+      Main.notify (_("Shutdown in less than one minute"));
       break;
     case REBOOT:
-      Main.notify('Reboot in less than one minute');
+      Main.notify(_("Reboot in less than one minute"));
       break;
     case SUSPEND:
-      Main.notify('Suspend in less than one minute');
+      Main.notify(_("Suspend in less than one minute"));
       break;
     default: break;
   }
