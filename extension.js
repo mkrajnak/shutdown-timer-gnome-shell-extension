@@ -46,7 +46,7 @@ const ShutdownTimerButton = new Lang.Class({
      this.parent(0.0, _("Shutdown Timer"));
      this._shortcutsBindingIds = [];
 
-     this.button = new St.BoxLayout({ style_class: 'panel-button'});
+     this.button = new St.BoxLayout();
      this.time = new St.Label({ style_class: 'timeLabel' });
 
      // Icons
@@ -153,9 +153,7 @@ function onTimeUpdate(){
   if (set === SHUTDOWNONTIME) {
     calculateTime();
   }
-  else {
-    time = (h*3600 + m*60 + s);
-  }
+  time = (h*3600 + m*60 + s);
   renderTime();
 }
 
@@ -187,7 +185,11 @@ function changeIcon(){
 * start timer
 */
 function start(){
-  global.log('AST: shutdown in s' + time.toString());
+ global.log('ST: shutdown in s' + time.toString());
+set = set = settings.get_int('timer');
+ if (set === SHUTDOWNONTIME) {      // recalculate On Time timer after pause
+   onTimeUpdate();
+ }
   isRunning = true;
   notified = false;
   GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT , 1,  timer);
@@ -215,7 +217,7 @@ function timer(){
   if (!isRunning) {
     return false;
   }
-  if (time < 600 && !notified) {
+  if (time < 60 && !notified) {
     send_notification()
   }
   if (time === 0) {
@@ -262,23 +264,28 @@ function doAction(){
 /**
 * Calculate the time difference only hours and minutes
 */
-function calculateTime()
-{
-  time = (h*3600 + m*60);                                   // get current time
-  let t = new GnomeDesktop.WallClock();
-  let timeStr = t.clock.substring(t.clock.length - 6, t.clock.length);
-  let tmp = timeStr.match(/([0-9]{2})/gm);              //convert it to seconds
-  let currentTime = (tmp[0]*60*60) + tmp[1]*60;
+function calculateTime(){
+  now = new Date();                    // get current now
+  now.setHours(h);                     // set the values
+  now.setMinutes(m);
+  now.setSeconds(0);
+
+  let d = new Date();
+  let currentTime = d.getTime()/1000;   // ger rid of milliseconds
+  let setTime = now.getTime()/1000;
   // compare with entered value and calculate the result
-  if (time > currentTime) {
-    time = time - currentTime;
+
+  if (setTime > currentTime) {
+    setTime = setTime - currentTime;
   }
   else{
-    time = 24*3600 - currentTime + time;
+    now.setDate(now.getDate() + 1)
+    setTime = now.getTime()/1000;
+    setTime = setTime - currentTime;
   }
   //adjust values
-  h = Math.round(time/60/60);
-  m = Math.round(time/60%60);
+  h = Math.floor(setTime/3600);
+  m = Math.round(setTime/60%60);
   s = 0;
 }
 
@@ -290,13 +297,13 @@ function send_notification() {
   let action = settings.get_int('action');
   switch (action) {
     case SHUTDOWN:
-      Main.notify('Shutdown in less than 3 minutes');
+      Main.notify('Shutdown in less than one minute');
       break;
     case REBOOT:
-      Main.notify('Reboot in less than 3 minutes');
+      Main.notify('Reboot in less than one minute');
       break;
     case SUSPEND:
-      Main.notify('Suspend in less than 3 minutes');
+      Main.notify('Suspend in less than one minute');
       break;
     default: break;
   }

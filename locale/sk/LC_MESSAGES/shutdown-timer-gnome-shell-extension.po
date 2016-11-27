@@ -84,3 +84,15 @@ msgstr "Nový časovač"
 #+: extension.js:75
 msgid "Pause/Resume Timer"
 msgstr "Pozastaviť/Spustiť časovač"
+
+#+: extension.js:300
+msgid "Shutdown in less than one minute"
+msgstr "Vypnutie počítača za menej ako jednu minútu"
+
+#+: extension.js:303
+msgid "Reboot in less than one minute"
+msgstr "Reštart počítača za menej ako jednu minútu"
+
+#+: extension.js:306
+msgid "Suspend in less than one minute"
+msgstr "Uspatie počítača za menej ako jednu minútu"
