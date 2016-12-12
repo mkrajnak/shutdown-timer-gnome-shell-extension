@@ -98,8 +98,8 @@ const ShutdownTimerButton = new Lang.Class({
         isRunning = false;
       }
       else{
-        isRunning = true;
         start();
+        //isRunning = true;
       }
     },
 
@@ -186,8 +186,11 @@ function changeIcon(){
 * start timer
 */
 function start(){
+  if (isRunning) {
+    return;
+  }
  global.log('ST: shutdown in s' + time.toString());
-set = set = settings.get_int('timer');
+ set = settings.get_int('timer');
  if (set === SHUTDOWNONTIME) {      // recalculate On Time timer after pause
    onTimeUpdate();
  }
