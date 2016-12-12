@@ -65,9 +65,13 @@ msgstr "Uspať"
 msgid "Shortcuts:"
 msgstr "Skratka:"
 
-#: prefs.js:200
+#: prefs.js:197
 msgid "Start/Stop Timer"
 msgstr "štart/pauza časovača"
+
+#: prefs.js:199
+msgid "Open options"
+msgstr "Otvor nastavenia"
 
 #: prefs.js:192
 msgid "Start"

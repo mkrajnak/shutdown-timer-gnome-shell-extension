@@ -208,7 +208,6 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         let start = new Gtk.Button ({label: _("Start")});
 
         start.connect('clicked', Lang.bind(this, function(){
-          global.log(!settings.get_boolean('timer-start'))
           settings.set_boolean('timer-start', !settings.get_boolean('timer-start'));
           let w = this.get_window()
           w.destroy()
