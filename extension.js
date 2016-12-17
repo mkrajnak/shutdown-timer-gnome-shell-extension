@@ -10,7 +10,7 @@ const Gir = imports.gi.GIRepository;
 const Lang = imports.lang;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
-// shutdown functionality
+// shutdown, reboot, suspend functionality
 const GnomeSession = imports.misc.gnomeSession;
 const GnomeDesktop = imports.gi.GnomeDesktop;
 const LoginManager = imports.misc.loginManager;
@@ -21,10 +21,10 @@ const Util = imports.misc.util;
 const GLib = imports.gi.GLib;
 // init translation
 const Gettext = imports.gettext;
-const _ = Gettext.domain('shutdown-timer-gnome-shell-extension').gettext;
+const _ = Gettext.domain("shutdown-timer-gnome-shell-extension").gettext;
 // notification
 const MessageTray = imports.ui.main.messageTray;
-//OPT
+// option constants
 const SHUTDOWN = 0;
 const REBOOT = 1;
 const SUSPEND = 2;
@@ -38,7 +38,7 @@ let isRunning = false;
 let notified = false;
 
 const ShutdownTimerButton = new Lang.Class({
-  Name: 'ShutdownTimerButton',
+  Name: "ShutdownTimerButton",
   Extends: PanelMenu.Button,
 
    _init: function ()
@@ -47,16 +47,16 @@ const ShutdownTimerButton = new Lang.Class({
      this._shortcutsBindingIds = [];
 
      this.button = new St.BoxLayout();
-     this.time = new St.Label({ style_class: 'timeLabel' });
+     this.time = new St.Label({ style_class: "timeLabel" });
 
      // Icons
      let icon_shutdown = Gio.icon_new_for_string(Extension.path + "/icons/system-shutdown.png");
      let icon_suspend = Gio.icon_new_for_string(Extension.path + "/icons/media-playback-pause.png");
      let icon_restart = Gio.icon_new_for_string(Extension.path + "/icons/view-refresh.png");
      // Icons objs
-     this.icon_shutdown_obj = new St.Icon({ gicon: icon_shutdown, style_class: 'system-status-icon'});
-     this.icon_suspend_obj = new St.Icon({ gicon: icon_suspend, style_class: 'system-status-icon'});
-     this.icon_restart_obj = new St.Icon({ gicon: icon_restart, style_class: 'system-status-icon'});
+     this.icon_shutdown_obj = new St.Icon({ gicon: icon_shutdown, style_class: "system-status-icon"});
+     this.icon_suspend_obj = new St.Icon({ gicon: icon_suspend, style_class: "system-status-icon"});
+     this.icon_restart_obj = new St.Icon({ gicon: icon_restart, style_class: "system-status-icon"});
 
      this.button.add_child(this.icon_shutdown_obj);
      this.button.add_child(this.icon_suspend_obj);
@@ -79,14 +79,18 @@ const ShutdownTimerButton = new Lang.Class({
       // Second Item
       let pauseTimer = new PopupMenu.PopupMenuItem(_("Pause/Resume Timer"));
       this.popupMenu.addMenuItem(pauseTimer, 1);
-
-      this.pauseId = pauseTimer.connect('activate', Lang.bind(this, this._pause));
-      this.openSettingsId = newTimer.connect('activate', Lang.bind(this, this._openSettings));
+      // Third item
+      let restartTimer = new PopupMenu.PopupMenuItem(_("Restart Timer"));
+      this.popupMenu.addMenuItem(restartTimer, 2);
+      // keep reference to binded callback
+      this.pauseId = pauseTimer.connect("activate", Lang.bind(this, this._pause));
+      this.openSettingsId = newTimer.connect("activate", Lang.bind(this, this._openSettings));
+      this.restartTimerId = restartTimer.connect("activate", Lang.bind(this, restart));
     },
 
     _openSettings: function (){
       isRunning = false;
-      onTimeUpdate()
+      onTimeUpdate();
       Util.spawn([
           "gnome-shell-extension-prefs",
           Extension.metadata.uuid
@@ -99,56 +103,56 @@ const ShutdownTimerButton = new Lang.Class({
       }
       else{
         start();
-        //isRunning = true;
       }
     },
 
     _destroy: function(){
       this._unbindShortcuts()
+      this.newTimer.disconnect(this.openSettingsId);
       this.pauseTimer.disconnect(this.pauseId);
-      this.pauseTimer.disconnect(this.openSettingsId);
+      this.restartTimer.disconnect(this.restartTimerId);
+
+      this.parent();
     },
 
     // Shortcut code borrowed from clipboard-indicator extension
     _bindShortcuts: function () {
       this._unbindShortcuts();                          // clear and get ready to bind callback
-      this._bindShortcut('shortcut', this._pause);      //Timer start
-      this._bindShortcut('option', this._openSettings); // settings
+      this._bindShortcut("shortcut-start", this._pause);      //Timer start
+      this._bindShortcut("shortcut-option", this._openSettings); // settings
+      this._bindShortcut("shortcut-restart", restart);            // restart timer
     },
 
     _unbindShortcuts: function () {
         this._shortcutsBindingIds.forEach(
             (id) => Main.wm.removeKeybinding(id)
         );
-
         this._shortcutsBindingIds = [];
     },
 
     _bindShortcut: function(name, cb) {
-        var ModeType = Shell.hasOwnProperty('ActionMode') ?
+        var ModeType = Shell.hasOwnProperty("ActionMode") ?
             Shell.ActionMode : Shell.KeyBindingMode;
 
-      Main.wm.addKeybinding(
-          name,
-          settings,
-          Meta.KeyBindingFlags.NONE,
-          ModeType.ALL,
-          Lang.bind(this, cb)
-      );
-
-      this._shortcutsBindingIds.push(name);
+        Main.wm.addKeybinding(
+            name,
+            settings,
+            Meta.KeyBindingFlags.NONE,
+            ModeType.ALL,
+            Lang.bind(this, cb)
+        );
+        this._shortcutsBindingIds.push(name);
   }
 });
-//ShutdownTimerButton
 
 /**
 * get values from settings and render them immediately
 */
 function onTimeUpdate(){
-  let set = settings.get_int('timer');
-  h = settings.get_int('hours-value');
-  m = settings.get_int('minutes-value');
-  s = settings.get_int('seconds-value');
+  let set = settings.get_int("timer");
+  h = settings.get_int("hours-value");
+  m = settings.get_int("minutes-value");
+  s = settings.get_int("seconds-value");
 
   if (set === SHUTDOWNONTIME) {
     calculateTime();
@@ -161,7 +165,7 @@ function onTimeUpdate(){
 * set correct icon
 */
 function changeIcon(){
-  let action = settings.get_int('action');
+  let action = settings.get_int("action");
   switch (action) {
     case SHUTDOWN:
       shutdownTimerButton.icon_restart_obj.hide()
@@ -186,17 +190,27 @@ function changeIcon(){
 * start timer
 */
 function start(){
-  if (isRunning) {
-    return;
+  if (isRunning) {  // special case when option window is opened but timer
+    return;         // is already running via keyboard shorcut
   }
- global.log('ST: shutdown in s' + time.toString());
- set = settings.get_int('timer');
- if (set === SHUTDOWNONTIME) {      // recalculate On Time timer after pause
-   onTimeUpdate();
- }
+  let action = settings.get_int("action");
+  global.log("ShutdownTimer: "+ action.toString() +" in " + time.toString());
+
+  set = settings.get_int("timer");
+  if (set === SHUTDOWNONTIME) {      // recalculate On Time timer after pause
+    onTimeUpdate();
+  }
   isRunning = true;
   notified = false;
   GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT , 1,  timer);
+}
+
+/**
+* Restart timer from last know configuration
+*/
+function restart(){
+  onTimeUpdate();
+  start();
 }
 
 /**
@@ -208,9 +222,9 @@ function renderTime(){
   H = h.toString();
   M = m.toString();
   S = s.toString();
-  H = H.length === 1 ? '0' + H : H;
-  M = M.length === 1 ? '0' + M : M;
-  S = S.length === 1 ? '0' + S : S;
+  H = H.length === 1 ? "0" + H : H;
+  M = M.length === 1 ? "0" + M : M;
+  S = S.length === 1 ? "0" + S : S;
   shutdownTimerButton.time.text = H + ":" + M + ":" + S;
 }
 
@@ -222,7 +236,7 @@ function timer(){
     return false;
   }
   if (time < 60 && !notified) {
-    send_notification()
+    send_notification();
   }
   if (time === 0) {
     isRunning = false;
@@ -241,7 +255,7 @@ function timer(){
   }
   s = s - 1;
   time = time - 1;
-  renderTime()
+  renderTime();
   return true;
 }
 
@@ -250,7 +264,7 @@ function timer(){
 */
 function doAction(){
   onTimeUpdate();
-  let action = settings.get_int('action');
+  let action = settings.get_int("action");
   switch (action) {
     case SHUTDOWN:
       shutdown();
@@ -272,7 +286,7 @@ function calculateTime(){
   now = new Date();                    // get current now
   now.setHours(h);                     // set the values
   now.setMinutes(m);
-  now.setSeconds(0);
+  now.setSeconds(0);                   // seconds are not important for us here
 
   let d = new Date();
   let currentTime = d.getTime()/1000;   // ger rid of milliseconds
@@ -287,7 +301,7 @@ function calculateTime(){
     setTime = now.getTime()/1000;
     setTime = setTime - currentTime;
   }
-  //adjust values
+  // adjust values
   h = Math.floor(setTime/3600);
   m = Math.round(setTime/60%60);
   s = 0;
@@ -298,7 +312,7 @@ function calculateTime(){
 */
 function send_notification() {
   notified = true;
-  let action = settings.get_int('action');
+  let action = settings.get_int("action");
   switch (action) {
     case SHUTDOWN:
       Main.notify (_("Shutdown in less than one minute"));
@@ -317,7 +331,6 @@ function send_notification() {
 * uses gnome session manager to shutdown the session with one minute prompt
 */
 function shutdown(){
-  Main.overview.hide();
 	let session = new GnomeSession.SessionManager();
 	session.ShutdownRemote();
 }
@@ -338,34 +351,28 @@ function suspend(){
 	login.suspend();
 }
 
-/**
-* First function called
-*/
-function init()
-{
+function init(){
   settings = Convenience.getSettings();
-  let localeDir = Extension.dir.get_child('locale');
-  Gettext.bindtextdomain('shutdown-timer-gnome-shell-extension', localeDir.get_path());
+  let localeDir = Extension.dir.get_child("locale");
+  Gettext.bindtextdomain("shutdown-timer-gnome-shell-extension", localeDir.get_path());
 }
 
 /**
-* Enable function
 * Initialization of applet, listen to settings
 */
-function enable()
-{
+function enable(){
   shutdownTimerButton = new ShutdownTimerButton();
-  Main.panel.addToStatusArea('shutdown-timer-button', shutdownTimerButton);
+  Main.panel.addToStatusArea("shutdown-timer-button", shutdownTimerButton);
 
-  hChangeEventId = settings.connect('changed::seconds-value', onTimeUpdate);
-	mChangeEventId = settings.connect('changed::hours-value', onTimeUpdate);
-	sChangeEventId = settings.connect('changed::minutes-value', onTimeUpdate);
+  hChangeEventId = settings.connect("changed::seconds-value", onTimeUpdate);
+	mChangeEventId = settings.connect("changed::hours-value", onTimeUpdate);
+	sChangeEventId = settings.connect("changed::minutes-value", onTimeUpdate);
 
   //listen to user changes action after time expires
-  aChangeEventId = settings.connect('changed::action', changeIcon);
+  aChangeEventId = settings.connect("changed::action", changeIcon);
   // listen to change of timer type
-  tChangeEventId = settings.connect('changed::timer', onTimeUpdate);
-  startChangeEventId = settings.connect('changed::timer-start', start);
+  tChangeEventId = settings.connect("changed::timer", onTimeUpdate);
+  startChangeEventId = settings.connect("changed::timer-start", start);
 
   shutdownTimerButton._bindShortcuts();
   changeIcon();
@@ -376,14 +383,13 @@ function enable()
 /**
 * destroy the applet
 */
-function disable()
-{
+function disable(){
+  isRunning = false;
   settings.disconnect(hChangeEventId);
   settings.disconnect(mChangeEventId);
   settings.disconnect(sChangeEventId);
   settings.disconnect(aChangeEventId);
   settings.disconnect(tChangeEventId);
-
   settings.disconnect(startChangeEventId);
   shutdownTimerButton.destroy()
 }

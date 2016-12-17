@@ -73,6 +73,10 @@ msgstr "start/pauza časovače"
 msgid "Open options"
 msgstr "Otevři nastavení"
 
+#: prefs.js:201
+msgid "Restart Timer "
+msgstr "Restart časovače"
+
 #: prefs.js:192
 msgid "Start"
 msgstr "Start"
@@ -88,6 +92,10 @@ msgstr "Nový časovač"
 #+: extension.js:75
 msgid "Pause/Resume Timer"
 msgstr "Pozastavit/Spustit časovač"
+
+#+: extension.js:83
+msgid "Restart Timer"
+msgstr "Restartovat časovač"
 
 #+: extension.js:300
 msgid "Shutdown in less than one minute"

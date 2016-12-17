@@ -32,22 +32,28 @@
       <description>Choose whether the action is made on time or after time</description>
     </key>
 
-    <key type="as" name="shortcut">
-      <default><![CDATA[['<Ctrl><Shift>Space']]]></default>
-      <summary>Start/Pause shutdown timer</summary>
-      <description>Start/Pause timer</description>
-    </key>
-
     <key type="b" name="timer-start">
       <default>false</default>
       <summary>Start timer</summary>
       <description>Start new timer</description>
     </key>
 
-    <key type="as" name="option">
-      <default><![CDATA[['<Ctrl>F8']]]></default>
+    <key type="as" name="shortcut-start">
+      <default><![CDATA[['<Ctrl><Shift>Space']]]></default>
       <summary>Start/Pause shutdown timer</summary>
       <description>Start/Pause timer</description>
+    </key>
+
+    <key type="as" name="shortcut-option">
+      <default><![CDATA[['<Ctrl><Shift>Q']]]></default>
+      <summary>Start/Pause timer</summary>
+      <description>Start/Pause timer</description>
+    </key>
+
+    <key type="as" name="shortcut-restart">
+      <default><![CDATA[['<Ctrl><Shift>R']]]></default>
+      <summary>Restart last configured timer timer</summary>
+      <description>Restart timer</description>
     </key>
 
   </schema>
