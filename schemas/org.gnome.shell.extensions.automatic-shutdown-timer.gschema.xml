@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- after every change of this file setting schema needs to be recompiled with:
+sudo glib-compile-schemas schemas -->
 <schemalist gettext-domain="ShutdownTimer">
   <schema path="/org/gnome/shell/extensions/automatic-shutdown-timer/" id="org.gnome.shell.extensions.automatic-shutdown-timer">
 
@@ -24,6 +26,12 @@
       <default>0</default>
       <summary>Action</summary>
       <description>Choose action, Shutdown=0, Reboot=1, Suspend=2</description>
+    </key>
+
+    <key type="i" name="position">
+      <default>2</default>
+      <summary>Position</summary>
+      <description>Applet position in gnome panel Left=0, Middle=1, Right=2</description>
     </key>
 
     <key type="i" name="timer">

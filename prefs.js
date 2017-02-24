@@ -17,6 +17,9 @@ const REBOOT = 1;
 const SUSPEND = 2;
 const SHUTDOWNAFTERTIME = 0;
 const SHUTDOWNONTIME = 1;
+const LEFT = 0;
+const MIDDLE = 1;
+const RIGHT = 2;
 let settings, widget;
 
 function init() {
@@ -188,8 +191,40 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
       suspendRbtn.active = true;
     }
 
-    this.attach(new Gtk.HSeparator(), 0, 7, 6, 1);
-    this.attach(new Gtk.Label({ label: _("Shortcuts:")}), 0, 8, 1, 1);
+    this.attach(new Gtk.Label({ label: _("Panel in position:")}), 0, 8, 1, 1);
+
+    let leftPostionRbtn = new Gtk.RadioButton({label: _("Left")});
+    leftPostionRbtn.connect("toggled", Lang.bind(this, function() {
+            settings.set_int("position", LEFT);
+    }));
+    this.attach(leftPostionRbtn, 2, 8, 1, 1);
+
+    let middlePositionRbtn = new Gtk.RadioButton({ group: leftPostionRbtn,
+                                        label: _("Middle")});
+    middlePositionRbtn.connect("toggled", Lang.bind(this, function() {
+            settings.set_int("position", MIDDLE);
+    }));
+    this.attach_next_to(middlePositionRbtn, leftPostionRbtn, Gtk.PositionType.RIGHT, 1, 1);
+
+    let rightPositionRbtn = new Gtk.RadioButton({ group: leftPostionRbtn,
+                                        label: _("Right")});
+    rightPositionRbt.connect("toggled", Lang.bind(this, function() {
+            settings.set_int("position", RIGHT);
+    }));
+    this.attach_next_to(rightPositionRbtn, middlePositionRbtn, Gtk.PositionType.RIGHT, 1, 1);
+
+    this.attach(new Gtk.Label({ label: _("Shortcuts:")}), 0, 9, 1, 1);
+
+    let setPosition = settings.get_int("position");
+    if (set === LEFT) {
+      leftPositionRbt.active = true;
+    }
+    else if (set === MIDDLE) {
+      middlePositionRbt.active = true;
+    }
+    else if (set === RIGHT) {
+      rightPositionRbt.active = true;
+    }
 
     let field_keybinding = createKeybindingWidget(settings);
 
@@ -199,14 +234,14 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
                   _("Open options"));
     addKeybinding(field_keybinding.model, settings, "shortcut-restart",
                   _("Restart Timer "));
-    this.attach(field_keybinding, 2, 8 , 3, 1);
+    this.attach(field_keybinding, 2, 9, 3, 1);
 
     this.field_keybinding_activation = new Gtk.Switch();
     this.field_keybinding_activation.connect("notify::active", function(widget){
         this.field_keybinding.set_sensitive(widget.active);
     });
 
-    this.attach(new Gtk.HSeparator(), 0, 9, 6, 1);
+    this.attach(new Gtk.HSeparator(), 0, 10, 6, 1);
     let start = new Gtk.Button ({label: _("Start")});
 
     start.connect("clicked", Lang.bind(this, function(){
@@ -214,7 +249,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
       let w = this.get_window()
       w.destroy()
     }));
-    this.attach(start, 2, 10, 3, 1);
+    this.attach(start, 2, 11, 3, 1);
   }
 });
 

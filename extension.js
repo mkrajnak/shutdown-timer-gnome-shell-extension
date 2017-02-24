@@ -30,12 +30,16 @@ const REBOOT = 1;
 const SUSPEND = 2;
 const SHUTDOWNAFTERTIME = 0;
 const SHUTDOWNONTIME = 1;
+const LEFT = 0;
+const MIDDLE = 1;
+const RIGHT = 2;
 
 // remeber connect methods ids
 let hChangeEventId, mChangeEventId, sChangeEventId, aChangeEventId, startChangeEventId;
 let tChangeEventId, shutdownTimerButton, settings, time, h, m, s;
 let isRunning = false;
 let notified = false;
+let position;
 
 const ShutdownTimerButton = new Lang.Class({
   Name: "ShutdownTimerButton",
@@ -351,19 +355,30 @@ function suspend(){
 	login.suspend();
 }
 
-function init(){
-  settings = Convenience.getSettings();
-  let localeDir = Extension.dir.get_child("locale");
-  Gettext.bindtextdomain("shutdown-timer-gnome-shell-extension", localeDir.get_path());
+/**
+* Change applet position in upper panel
+*/
+function changePosition(){
+  let position = settings.get_int("position");
+  switch (position) {
+    case LEFT:
+      Main.panel._addToPanelBox('shutdown-timer-button', shutdownTimerButton, -1, Main.panel._leftBox);
+      break;
+    case MIDDLE:
+      Main.panel._addToPanelBox('shutdown-timer-button', shutdownTimerButton, -1, Main.panel._centerBox);
+      break;
+    case RIGHT:
+      Main.panel._addToPanelBox('shutdown-timer-button', shutdownTimerButton, 0, Main.panel._rightBox);
+      break;
+    default: break;
+  }
+
 }
 
 /**
-* Initialization of applet, listen to settings
+* connect variables to settings, render changes correctly
 */
-function enable(){
-  shutdownTimerButton = new ShutdownTimerButton();
-  Main.panel.addToStatusArea("shutdown-timer-button", shutdownTimerButton);
-
+function prepareSettings(){
   hChangeEventId = settings.connect("changed::seconds-value", onTimeUpdate);
 	mChangeEventId = settings.connect("changed::hours-value", onTimeUpdate);
 	sChangeEventId = settings.connect("changed::minutes-value", onTimeUpdate);
@@ -373,11 +388,28 @@ function enable(){
   // listen to change of timer type
   tChangeEventId = settings.connect("changed::timer", onTimeUpdate);
   startChangeEventId = settings.connect("changed::timer-start", start);
+  //extension position
+  positionEventId = settings.connect("changed::position", changePosition);
 
   shutdownTimerButton._bindShortcuts();
   changeIcon();
   onTimeUpdate();
   renderTime();
+}
+
+function init(){
+  settings = Convenience.getSettings();
+  let localeDir = Extension.dir.get_child("locale");
+  Gettext.bindtextdomain("shutdown-timer-gnome-shell-extension", localeDir.get_path());
+}
+
+/**
+* Initialization of applet, call settings init
+*/
+function enable(){
+  shutdownTimerButton = new ShutdownTimerButton();
+  changePosition();
+  prepareSettings();
 }
 
 /**
