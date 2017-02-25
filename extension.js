@@ -36,7 +36,7 @@ const RIGHT = 2;
 
 // remeber connect methods ids
 let hChangeEventId, mChangeEventId, sChangeEventId, aChangeEventId, startChangeEventId;
-let tChangeEventId, shutdownTimerButton, settings, time, h, m, s;
+let positionEventId, tChangeEventId, shutdownTimerButton, settings, time, h, m, s;
 let isRunning = false;
 let notified = false;
 let position;
@@ -200,7 +200,7 @@ function start(){
   let action = settings.get_int("action");
   global.log("ShutdownTimer: "+ action.toString() +" in " + time.toString());
 
-  set = settings.get_int("timer");
+  let set = settings.get_int("timer");
   if (set === SHUTDOWNONTIME) {      // recalculate On Time timer after pause
     onTimeUpdate();
   }
@@ -423,5 +423,6 @@ function disable(){
   settings.disconnect(aChangeEventId);
   settings.disconnect(tChangeEventId);
   settings.disconnect(startChangeEventId);
+  settings.disconnect(positionEventId);
   shutdownTimerButton.destroy()
 }

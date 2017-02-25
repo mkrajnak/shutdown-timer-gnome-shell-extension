@@ -35,7 +35,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
   _init: function() {
     this.parent();
-    this.margin = 12;
+    this.margin = 5;
     this.column_homogeneous = true;
     this.row_spacing = this.column_spacing = 5;
     this.attach(new Gtk.Label({ label: _("Shutdown:") }), 0, 0, 1, 1);
@@ -75,7 +75,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     //3rd row
     let hours = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
     hours.set_increments(1, 1);
-    hours.modify_font(Pango.font_description_from_string("30"))
+    hours.modify_font(Pango.font_description_from_string("25"))
     hours.set_range(0, 24);
     hours.set_value(0);
     hours.set_value(settings.get_int("minutes-value"));
@@ -88,7 +88,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
     let minutes = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
     minutes.set_increments(1, 1);
-    minutes.modify_font(Pango.font_description_from_string("30"))
+    minutes.modify_font(Pango.font_description_from_string("25"))
     minutes.set_range(-1, 60);
     minutes.set_value(settings.get_int("minutes-value"));
 
@@ -116,7 +116,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
     // init seconds
     let seconds = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
-    seconds.modify_font(Pango.font_description_from_string("30"))
+    seconds.modify_font(Pango.font_description_from_string("25"))
     seconds.set_increments(1, 1);
     seconds.set_range(-1, 60);
     seconds.set_value(settings.get_int("seconds-value"));
@@ -191,7 +191,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
       suspendRbtn.active = true;
     }
 
-    this.attach(new Gtk.Label({ label: _("Panel in position:")}), 0, 8, 1, 1);
+    this.attach(new Gtk.Label({ label: _("Position in panel:")}), 0, 8, 1, 1);
 
     let leftPostionRbtn = new Gtk.RadioButton({label: _("Left")});
     leftPostionRbtn.connect("toggled", Lang.bind(this, function() {
@@ -208,7 +208,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
     let rightPositionRbtn = new Gtk.RadioButton({ group: leftPostionRbtn,
                                         label: _("Right")});
-    rightPositionRbt.connect("toggled", Lang.bind(this, function() {
+    rightPositionRbtn.connect("toggled", Lang.bind(this, function() {
             settings.set_int("position", RIGHT);
     }));
     this.attach_next_to(rightPositionRbtn, middlePositionRbtn, Gtk.PositionType.RIGHT, 1, 1);
@@ -217,13 +217,13 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
     let setPosition = settings.get_int("position");
     if (set === LEFT) {
-      leftPositionRbt.active = true;
+      leftPositionRbtn.active = true;
     }
     else if (set === MIDDLE) {
-      middlePositionRbt.active = true;
+      middlePositionRbtn.active = true;
     }
     else if (set === RIGHT) {
-      rightPositionRbt.active = true;
+      rightPositionRbtn.active = true;
     }
 
     let field_keybinding = createKeybindingWidget(settings);
