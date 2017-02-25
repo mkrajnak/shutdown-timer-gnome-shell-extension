@@ -37,6 +37,7 @@ const RIGHT = 2;
 // remeber connect methods ids
 let hChangeEventId, mChangeEventId, sChangeEventId, aChangeEventId, startChangeEventId;
 let positionEventId, tChangeEventId, shutdownTimerButton, settings, time, h, m, s;
+let notificationsEnable, hideTime;
 let isRunning = false;
 let notified = false;
 let position;
@@ -105,9 +106,10 @@ const ShutdownTimerButton = new Lang.Class({
       if (isRunning) {
         isRunning = false;
       }
-      else{
+      else {
         start();
       }
+      renderTime();
     },
 
     _destroy: function(){
@@ -222,14 +224,18 @@ function restart(){
 * push time to applet
 */
 function renderTime(){
-  let H,M,S;
-  H = h.toString();
-  M = m.toString();
-  S = s.toString();
-  H = H.length === 1 ? "0" + H : H;
-  M = M.length === 1 ? "0" + M : M;
-  S = S.length === 1 ? "0" + S : S;
-  shutdownTimerButton.time.text = H + ":" + M + ":" + S;
+  if (hideTime && !isRunning) {
+    shutdownTimerButton.time.text = '';
+  } else {
+    let H,M,S;
+    H = h.toString();
+    M = m.toString();
+    S = s.toString();
+    H = H.length === 1 ? "0" + H : H;
+    M = M.length === 1 ? "0" + M : M;
+    S = S.length === 1 ? "0" + S : S;
+    shutdownTimerButton.time.text = H + ":" + M + ":" + S;
+  }
 }
 
 /**
@@ -315,6 +321,9 @@ function calculateTime(){
 * Send notification to shell
 */
 function send_notification() {
+  if (!notificationsEnable) {
+    return;
+  }
   notified = true;
   let action = settings.get_int("action");
   switch (action) {
@@ -375,6 +384,15 @@ function changePosition(){
 
 }
 
+function toggleNotifications(){
+  notificationsEnable = settings.get_boolean("notifications");
+}
+
+function toggleHideTime(){
+  hideTime = settings.get_boolean("hide-time");
+  renderTime();
+}
+
 /**
 * connect variables to settings, render changes correctly
 */
@@ -390,11 +408,14 @@ function prepareSettings(){
   startChangeEventId = settings.connect("changed::timer-start", start);
   //extension position
   positionEventId = settings.connect("changed::position", changePosition);
+  notificationsEventId = settings.connect("changed::notifications", toggleNotifications);
+  hideTImeEventId = settings.connect("changed::hide-time", toggleHideTime);
 
   shutdownTimerButton._bindShortcuts();
   changeIcon();
   onTimeUpdate();
-  renderTime();
+  toggleNotifications();
+  toggleHideTime();
 }
 
 function init(){
@@ -424,5 +445,7 @@ function disable(){
   settings.disconnect(tChangeEventId);
   settings.disconnect(startChangeEventId);
   settings.disconnect(positionEventId);
+  settings.disconnect(notificationsEventId);
+  settings.disconnect(hideTImeEventId);
   shutdownTimerButton.destroy()
 }

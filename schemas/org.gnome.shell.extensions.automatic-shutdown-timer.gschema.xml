@@ -46,6 +46,18 @@ sudo glib-compile-schemas schemas -->
       <description>Start new timer</description>
     </key>
 
+    <key type="b" name="notifications">
+      <default>true</default>
+      <summary>Turn notification on/off</summary>
+      <description>Turn notification on/off</description>
+    </key>
+
+    <key type="b" name="hide-time">
+      <default>false</default>
+      <summary>Hide Time</summary>
+      <description>Hide time when timer is not active/show only icon</description>
+    </key>
+
     <key type="as" name="shortcut-start">
       <default><![CDATA[['<Ctrl><Shift>Space']]]></default>
       <summary>Start/Pause shutdown timer</summary>
