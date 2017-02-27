@@ -350,20 +350,20 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     this.opt.attach(new Gtk.HSeparator(), 0, 0, 6, 1);
     this.opt.attach(new Gtk.Label({ label: _("Position in panel:"), halign: Gtk.Align.END}), 0, 1, 2, 1);
 
-    let leftPostionRbtn = new Gtk.RadioButton({label: _("Left")});
-    leftPostionRbtn.connect("toggled", Lang.bind(this, function() {
+    let leftPositionRbtn = new Gtk.RadioButton({label: _("Left")});
+    leftPositionRbtn.connect("toggled", Lang.bind(this, function() {
             settings.set_int("position", LEFT);
     }));
-    this.opt.attach(leftPostionRbtn, 3, 1, 1, 1);
+    this.opt.attach(leftPositionRbtn, 3, 1, 1, 1);
 
-    let middlePositionRbtn = new Gtk.RadioButton({ group: leftPostionRbtn,
+    let middlePositionRbtn = new Gtk.RadioButton({ group: leftPositionRbtn,
                                         label: _("Middle")});
     middlePositionRbtn.connect("toggled", Lang.bind(this, function() {
             settings.set_int("position", MIDDLE);
     }));
-    this.opt.attach_next_to(middlePositionRbtn, leftPostionRbtn, Gtk.PositionType.RIGHT, 1, 1);
+    this.opt.attach_next_to(middlePositionRbtn, leftPositionRbtn, Gtk.PositionType.RIGHT, 1, 1);
 
-    let rightPositionRbtn = new Gtk.RadioButton({ group: leftPostionRbtn,
+    let rightPositionRbtn = new Gtk.RadioButton({ group: leftPositionRbtn,
                                         label: _("Right")});
     rightPositionRbtn.connect("toggled", Lang.bind(this, function() {
             settings.set_int("position", RIGHT);
