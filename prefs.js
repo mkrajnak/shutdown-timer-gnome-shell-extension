@@ -235,7 +235,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
     /** WAKE UP FEATURE , SETUP same time widget as above but smaller */
     this.wakeUpTime.attach(new Gtk.HSeparator(), 0, 0, 6, 1);
-    this.wakeUpTime.attach(new Gtk.Label({ label: _("Suspend NOW and up later via rtcwake(root access required)"),
+    this.wakeUpTime.attach(new Gtk.Label({ label: _("Suspend NOW and Wake Up later via rtcwake(root access required)"),
                                           halign: Gtk.Align.CENTER }), 0, 1, 6, 1);
 
     this.wakeUpTime.attach(new Gtk.HSeparator(), 0, 2, 6, 1);
@@ -373,13 +373,13 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     this.opt.attach(new Gtk.Label({ label: _("Shortcuts:"), halign: Gtk.Align.END}), 0, 3, 2, 1);
 
     let setPosition = settings.get_int("position");
-    if (set === LEFT) {
+    if (setPosition === LEFT) {
       leftPositionRbtn.active = true;
     }
-    else if (set === MIDDLE) {
+    else if (setPosition === MIDDLE) {
       middlePositionRbtn.active = true;
     }
-    else if (set === RIGHT) {
+    else if (setPosition === RIGHT) {
       rightPositionRbtn.active = true;
     }
 
