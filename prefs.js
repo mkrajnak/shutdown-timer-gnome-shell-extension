@@ -20,6 +20,8 @@ const SHUTDOWNONTIME = 1;
 const LEFT = 0;
 const MIDDLE = 1;
 const RIGHT = 2;
+const TIME_FONT_HEIGHT = "30";
+const WAKE_TIME_FONT_HEIGHT = "30";
 let settings, widget;
 
 function init() {
@@ -58,6 +60,11 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     this.setTime.margin = 5;
     this.setTime.column_homogeneous = true;
     this.setTime.row_spacing = this.column_spacing = 10;
+
+    this.wakeUpTime = new Gtk.Grid()
+    this.wakeUpTime.margin = 5;
+    this.wakeUpTime.column_homogeneous = true;
+    this.wakeUpTime.row_spacing = this.column_spacing = 10;
 
     this.opt = new Gtk.Grid()
     this.opt.margin = 5;
@@ -102,10 +109,9 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     //3rd row
     let hours = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
     hours.set_increments(1, 1);
-    hours.modify_font(Pango.font_description_from_string("25"))
+    hours.modify_font(Pango.font_description_from_string(TIME_FONT_HEIGHT))
     hours.set_range(0, 24);
-    hours.set_value(0);
-    hours.set_value(settings.get_int("minutes-value"));
+    hours.set_value(settings.get_int("hours-value"));
     hours.set_wrap(true)
     hours.connect("value-changed", Lang.bind(this, function(){
       settings.set_int("hours-value", hours.get_value_as_int());
@@ -115,7 +121,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
     let minutes = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
     minutes.set_increments(1, 1);
-    minutes.modify_font(Pango.font_description_from_string("25"))
+    minutes.modify_font(Pango.font_description_from_string(TIME_FONT_HEIGHT))
     minutes.set_range(-1, 60);
     minutes.set_value(settings.get_int("minutes-value"));
 
@@ -143,7 +149,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
     // init seconds
     let seconds = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
-    seconds.modify_font(Pango.font_description_from_string("25"))
+    seconds.modify_font(Pango.font_description_from_string(TIME_FONT_HEIGHT))
     seconds.set_increments(1, 1);
     seconds.set_range(-1, 60);
     seconds.set_value(settings.get_int("seconds-value"));
@@ -218,17 +224,127 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
       suspendRbtn.active = true;
     }
 
-    this.setTime.attach(new Gtk.HSeparator(), 0, 8, 6, 1);
     let start = new Gtk.Button ({label: _("Start")});
-
     start.connect("clicked", Lang.bind(this, function(){
       settings.set_boolean("timer-start", !settings.get_boolean("timer-start"));
       let w = this.get_window()
       w.destroy()
     }));
-    this.setTime.attach(start, 2, 11, 3, 1);
-    stack.add_titled(this.setTime, "set-timer", _("Set Time"));
-    // end of Set Time tab
+    this.setTime.attach(start, 2, 8, 3, 1);
+    stack.add_titled(this.setTime, "set-timer", _("Set Timer"));
+
+    /** WAKE UP FEATURE , SETUP same time widget as above but smaller */
+    this.wakeUpTime.attach(new Gtk.HSeparator(), 0, 0, 6, 1);
+    this.wakeUpTime.attach(new Gtk.Label({ label: _("Suspend NOW and up later via rtcwake(root access required)"),
+                                          halign: Gtk.Align.CENTER }), 0, 1, 6, 1);
+
+    this.wakeUpTime.attach(new Gtk.HSeparator(), 0, 2, 6, 1);
+    this.wakeUpTime.attach(new Gtk.Label({ label: _("Wake Up Time:"), halign: Gtk.Align.END}), 0, 3, 1, 1);
+
+
+    let wake_hour_label = new Gtk.Label({ label: _(" Hours ")});
+    let wake_min_label = new Gtk.Label({ label: _("Minutes")});
+    let wake_sec_label = new Gtk.Label({ label: _("Seconds")});
+    this.wakeUpTime.attach(wake_hour_label, 2, 3, 1, 1);
+    this.wakeUpTime.attach_next_to(wake_min_label, wake_hour_label, Gtk.PositionType.RIGHT, 1, 1);
+    this.wakeUpTime.attach_next_to(wake_sec_label, wake_min_label, Gtk.PositionType.RIGHT, 1, 1);
+
+    //3rd row
+    let wake_hours = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
+    wake_hours.set_increments(1, 1);
+    wake_hours.modify_font(Pango.font_description_from_string(WAKE_TIME_FONT_HEIGHT))
+    wake_hours.set_range(0, 24);
+    wake_hours.set_value(settings.get_int("wake-hours-value"));
+    wake_hours.set_wrap(true)
+    wake_hours.connect("value-changed", Lang.bind(this, function(){
+      settings.set_int("wake-hours-value", wake_hours.get_value_as_int());
+    }));
+    wake_hours.set_value(settings.get_int("wake-hours-value"));
+    this.wakeUpTime.attach(wake_hours, 2, 4, 1, 1);
+
+    let wake_minutes = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
+    wake_minutes.set_increments(1, 1);
+    wake_minutes.modify_font(Pango.font_description_from_string(WAKE_TIME_FONT_HEIGHT))
+    wake_minutes.set_range(-1, 60);
+    wake_minutes.set_value(settings.get_int("wake-minutes-value"));
+
+    let wake_tmp_min = wake_minutes.get_value_as_int()
+    wake_minutes.connect("value-changed", Lang.bind(this, function(){
+      let time = wake_minutes.get_value_as_int()
+      if ( time === 60) {
+        if (wake_tmp_min < time) {
+          wake_minutes.set_value(0)
+          let val = wake_hours.get_value_as_int() + 1
+          wake_hours.set_value(val)
+        }
+      }
+      if ( time < 0) {
+        if (wake_tmp_min > time) {
+          wake_minutes.set_value(59)
+          let val = wake_hours.get_value_as_int() - 1
+          wake_hours.set_value(val)
+        }
+      }
+      wake_tmp_min = time;
+      settings.set_int("wake-minutes-value", wake_minutes.get_value_as_int());
+    }));
+    this.wakeUpTime.attach_next_to(wake_minutes, wake_hours, Gtk.PositionType.RIGHT, 1, 1);
+
+    // init seconds
+    let wake_seconds = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
+    wake_seconds.modify_font(Pango.font_description_from_string(WAKE_TIME_FONT_HEIGHT))
+    wake_seconds.set_increments(1, 1);
+    wake_seconds.set_range(-1, 60);
+    wake_seconds.set_value(settings.get_int("wake-seconds-value"));
+
+    // handle change
+    let wake_tmp_secs = wake_seconds.get_value_as_int()
+    wake_seconds.connect("value-changed", Lang.bind(this, function(){
+      let cs_time = wake_seconds.get_value_as_int()
+      if ( cs_time === 60) {
+        if (wake_tmp_secs < cs_time) {
+          wake_seconds.set_value(0)
+          let val = wake_minutes.get_value_as_int() + 1
+          if (val === 60) {
+              wake_hours.set_value(wake_hours.get_value_as_int() + 1)
+              val = 0
+          }
+          wake_minutes.set_value(val)
+        }
+      }
+      if ( cs_time < 0) {
+        if (wake_tmp_secs > cs_time) {
+          wake_seconds.set_value(59)
+          let val = wake_minutes.get_value_as_int()
+          val = val - 1
+          if (val < 0) {
+            let hval;
+            hval = wake_hours.get_value_as_int()
+            if (hval > 0) {
+              wake_hours.set_value(hval - 1)
+            }
+            val = 0
+          }
+          wake_minutes.set_value(val)
+        }
+      }
+      tmp_secs = cs_time;
+      settings.set_int("wake-seconds-value", wake_seconds.get_value_as_int());
+    }));
+    this.wakeUpTime.attach_next_to(wake_seconds, wake_minutes, Gtk.PositionType.RIGHT, 1, 1);
+
+    this.wakeUpTime.attach(new Gtk.HSeparator(), 0, 5, 6, 1);
+
+    let wakeStart  = new Gtk.Button ({label: _("Good Night!")});
+    wakeStart.connect("clicked", Lang.bind(this, function(){
+      settings.set_boolean("wake-up", !settings.get_boolean("wake-up"));
+      let w = this.get_window()
+      w.destroy()
+    }));
+    this.wakeUpTime.attach(wakeStart, 2, 6, 3, 1);
+
+    stack.add_titled(this.wakeUpTime, "set-wake-up-time", _("Wake Up Time"));
+    // end of Wake Up tab
 
     // start of Option tab
     this.opt.attach(new Gtk.HSeparator(), 0, 0, 6, 1);

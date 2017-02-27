@@ -35,7 +35,8 @@ const MIDDLE = 1;
 const RIGHT = 2;
 
 // remeber connect methods ids
-let hChangeEventId, mChangeEventId, sChangeEventId, aChangeEventId, startChangeEventId;
+let hChangeEventId, mChangeEventId, sChangeEventId, aChangeEventId;
+let notificationsEventId, hideTimeEventId, startChangeEventId, sleepWithWakeEventId;
 let positionEventId, tChangeEventId, shutdownTimerButton, settings, time, h, m, s;
 let notificationsEnable, hideTime;
 let isRunning = false;
@@ -293,7 +294,7 @@ function doAction(){
 * Calculate the time difference only hours and minutes
 */
 function calculateTime(){
-  now = new Date();                    // get current now
+  let now = new Date();                // get current now
   now.setHours(h);                     // set the values
   now.setMinutes(m);
   now.setSeconds(0);                   // seconds are not important for us here
@@ -303,14 +304,11 @@ function calculateTime(){
   let setTime = now.getTime()/1000;
   // compare with entered value and calculate the result
 
-  if (setTime > currentTime) {
-    setTime = setTime - currentTime;
-  }
-  else{
+  if (setTime < currentTime) {
     now.setDate(now.getDate() + 1)
     setTime = now.getTime()/1000;
-    setTime = setTime - currentTime;
   }
+  setTime = setTime - currentTime;
   // adjust values
   h = Math.floor(setTime/3600);
   m = Math.round(setTime/60%60);
@@ -384,6 +382,28 @@ function changePosition(){
 
 }
 
+function sleepWithWakeUp(){
+  let pkexec = GLib.find_program_in_path('pkexec');
+	let rtcwake = GLib.find_program_in_path('rtcwake');
+  let wh = settings.get_int("wake-hours-value");
+  let wm = settings.get_int("wake-minutes-value");
+  let ws = settings.get_int("wake-seconds-value");
+
+  let wakeUpTime = new Date();
+  wakeUpTime.setHours(wh);
+  wakeUpTime.setMinutes(wm);
+  wakeUpTime.setSeconds(ws);
+
+  let now = new Date();
+  if (wakeUpTime < now.getTime()) {
+    wakeUpTime.setDate(wakeUpTime.getDate() + 1)
+  }
+  let t = Math.floor(wakeUpTime.getTime()/1000)
+  global.log("pkexec" + " rtcwake" + " -m mem -t " + t.toString());
+
+  Util.spawnCommandLine(pkexec + " " + rtcwake + " -m mem -t " + t.toString());
+}
+
 function toggleNotifications(){
   notificationsEnable = settings.get_boolean("notifications");
 }
@@ -391,6 +411,10 @@ function toggleNotifications(){
 function toggleHideTime(){
   hideTime = settings.get_boolean("hide-time");
   renderTime();
+}
+
+function sleepAndWakeUp(){
+  sleepWithWake = settings.get_boolean("wake-up");
 }
 
 /**
@@ -409,8 +433,8 @@ function prepareSettings(){
   //extension position
   positionEventId = settings.connect("changed::position", changePosition);
   notificationsEventId = settings.connect("changed::notifications", toggleNotifications);
-  hideTImeEventId = settings.connect("changed::hide-time", toggleHideTime);
-
+  hideTimeEventId = settings.connect("changed::hide-time", toggleHideTime);
+  sleepWithWakeEventId = settings.connect("changed::wake-up", sleepWithWakeUp)
   shutdownTimerButton._bindShortcuts();
   changeIcon();
   onTimeUpdate();
@@ -447,5 +471,6 @@ function disable(){
   settings.disconnect(positionEventId);
   settings.disconnect(notificationsEventId);
   settings.disconnect(hideTImeEventId);
+  settings.disconnect(sleepWithWakeEventId);
   shutdownTimerButton.destroy()
 }
