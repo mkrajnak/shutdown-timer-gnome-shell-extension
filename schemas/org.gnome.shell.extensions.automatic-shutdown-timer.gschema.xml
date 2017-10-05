@@ -83,25 +83,25 @@ sudo glib-compile-schemas schemas -->
     </key>
 
     <key type="b" name="hide-time">
-      <default>false</default>
+      <default>true</default>
       <summary>Hide Time</summary>
       <description>Hide time when timer is not active/show only icon</description>
     </key>
 
     <key type="as" name="shortcut-start">
-      <default><![CDATA[['<Ctrl><Shift>Space']]]></default>
+      <default><![CDATA[['Disabled']]]></default>
       <summary>Start/Pause shutdown timer</summary>
       <description>Start/Pause timer</description>
     </key>
 
     <key type="as" name="shortcut-option">
-      <default><![CDATA[['<Ctrl><Shift>Q']]]></default>
+      <default><![CDATA[['Disabled']]]></default>
       <summary>Start/Pause timer</summary>
       <description>Start/Pause timer</description>
     </key>
 
     <key type="as" name="shortcut-restart">
-      <default><![CDATA[['<Ctrl><Shift>R']]]></default>
+      <default><![CDATA[['Disabled']]]></default>
       <summary>Restart last configured timer timer</summary>
       <description>Restart timer</description>
     </key>
