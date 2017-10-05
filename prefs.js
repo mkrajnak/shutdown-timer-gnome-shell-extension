@@ -81,7 +81,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     this.setTime.attach(afterTime, 2, 1, 2, 1);
 
     let onTime = new Gtk.RadioButton({group: afterTime,
-                                      label: _("on time(24h format)"),
+                                      label: _("on time (24h format)"),
                                       halign: Gtk.Align.START});
     onTime.connect("toggled", Lang.bind(this, function() {
             settings.set_int("timer", SHUTDOWNONTIME);
@@ -235,7 +235,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
     /** WAKE UP FEATURE , SETUP same time widget as above but smaller */
     this.wakeUpTime.attach(new Gtk.HSeparator(), 0, 0, 6, 1);
-    this.wakeUpTime.attach(new Gtk.Label({ label: _("Suspend NOW and Wake Up later via rtcwake(root access required)"),
+    this.wakeUpTime.attach(new Gtk.Label({ label: _("Warning: feature requires root access and leaves your PC unlocked"),
                                           halign: Gtk.Align.CENTER }), 0, 1, 6, 1);
 
     this.wakeUpTime.attach(new Gtk.HSeparator(), 0, 2, 6, 1);
@@ -343,7 +343,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     }));
     this.wakeUpTime.attach(wakeStart, 2, 6, 3, 1);
 
-    stack.add_titled(this.wakeUpTime, "set-wake-up-time", _("Wake Up Time"));
+    stack.add_titled(this.wakeUpTime, "set-wake-up-time", _("Sleep & Wake Up"));
     // end of Wake Up tab
 
     // start of Option tab
@@ -399,7 +399,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
         this.field_keybinding.set_sensitive(widget.active);
     });
 
-    this.opt.attach(new Gtk.Label({ label: _("Notifications on/off:"), halign: Gtk.Align.END}), 0, 5, 2, 1);
+    this.opt.attach(new Gtk.Label({ label: _("Toggle notifications:"), halign: Gtk.Align.END}), 0, 5, 2, 1);
 
     let notifications = new Gtk.Switch({
 			active: settings.get_boolean("notifications"),

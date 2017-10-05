@@ -47,8 +47,7 @@ const ShutdownTimerButton = new Lang.Class({
   Name: "ShutdownTimerButton",
   Extends: PanelMenu.Button,
 
-   _init: function ()
-   {
+   _init: function () {
      this.parent(0.0, _("Shutdown Timer"));
      this._shortcutsBindingIds = [];
 
@@ -74,19 +73,18 @@ const ShutdownTimerButton = new Lang.Class({
   },
 
   _buildMenu: function () {
-
       // Create menu section for items
       this.popupMenu = new PopupMenu.PopupMenuSection();
       this.menu.addMenuItem(this.popupMenu);
 
       // First Item
-      let newTimer = new PopupMenu.PopupMenuItem( _("New Timer"));
+      let newTimer = new PopupMenu.PopupMenuItem( _("Edit Time / Settings"));
       this.popupMenu.addMenuItem(newTimer, 0);
       // Second Item
-      let pauseTimer = new PopupMenu.PopupMenuItem(_("Pause/Resume Timer"));
+      let pauseTimer = new PopupMenu.PopupMenuItem(_("Pause / Resume"));
       this.popupMenu.addMenuItem(pauseTimer, 1);
       // Third item
-      let restartTimer = new PopupMenu.PopupMenuItem(_("Restart Timer"));
+      let restartTimer = new PopupMenu.PopupMenuItem(_("Restart"));
       this.popupMenu.addMenuItem(restartTimer, 2);
       // keep reference to binded callback
       this.pauseId = pauseTimer.connect("activate", Lang.bind(this, this._pause));
@@ -122,12 +120,12 @@ const ShutdownTimerButton = new Lang.Class({
       this.parent();
     },
 
-    // Shortcut code borrowed from clipboard-indicator extension
+    // shortcut code borrowed from clipboard-indicator extension
     _bindShortcuts: function () {
-      this._unbindShortcuts();                          // clear and get ready to bind callback
-      this._bindShortcut("shortcut-start", this._pause);      //Timer start
-      this._bindShortcut("shortcut-option", this._openSettings); // settings
-      this._bindShortcut("shortcut-restart", restart);            // restart timer
+      this._unbindShortcuts();        // clear and get ready to bind callback
+      this._bindShortcut("shortcut-start", this._pause);        // timer start
+      this._bindShortcut("shortcut-option", this._openSettings);// settings
+      this._bindShortcut("shortcut-restart", restart);          // restart timer
     },
 
     _unbindShortcuts: function () {
@@ -300,7 +298,7 @@ function calculateTime(){
   now.setSeconds(0);                   // seconds are not important for us here
 
   let d = new Date();
-  let currentTime = d.getTime()/1000;   // ger rid of milliseconds
+  let currentTime = d.getTime()/1000;  // get rid of milliseconds
   let setTime = now.getTime()/1000;
   // compare with entered value and calculate the result
 
@@ -425,12 +423,12 @@ function prepareSettings(){
 	mChangeEventId = settings.connect("changed::hours-value", onTimeUpdate);
 	sChangeEventId = settings.connect("changed::minutes-value", onTimeUpdate);
 
-  //listen to user changes action after time expires
+  // listen to user changes action after time expires
   aChangeEventId = settings.connect("changed::action", changeIcon);
   // listen to change of timer type
   tChangeEventId = settings.connect("changed::timer", onTimeUpdate);
   startChangeEventId = settings.connect("changed::timer-start", start);
-  //extension position
+  // extension position
   positionEventId = settings.connect("changed::position", changePosition);
   notificationsEventId = settings.connect("changed::notifications", toggleNotifications);
   hideTimeEventId = settings.connect("changed::hide-time", toggleHideTime);

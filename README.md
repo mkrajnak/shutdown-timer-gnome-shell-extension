@@ -1,6 +1,6 @@
 # Shutdown Timer
  * Extension for Gnome Shell
- * Compatible versions 3.16 - 3.22
+ * Compatible versions 3.16 - 3.26
 
 ## Features:
  * interactive icons displaying actions
@@ -11,7 +11,7 @@
  * programable keyboard shortcuts
  * translation to
   * cz
-  * sk 
+  * sk
   * fell free to make pull request with translation to your language
 
 ***
