@@ -1,9 +1,10 @@
 {
   "uuid": "shutdown-timer-gnome-shell-extension",
-  "description": "Allows to shutdown, restart and suspend computer after selected amount of time or in selected time.",
-  "shell-version": [ "3.26", "3.24", "3.22", "3.20", "3.16", "3.14"],
   "name": "ShutdownTimer",
+  "description": "Allows to shutdown, restart and suspend computer after selected amount of time or in selected time.",
   "gettext-domain": "AutomaticShutdownTimer",
   "settings-schema": "org.gnome.shell.extensions.automatic-shutdown-timer",
+  "url": "https://github.com/mkrajnak/shutdown-timer-gnome-shell-extension/",
+  "shell-version": [ "3.26", "3.24", "3.22", "3.20", "3.16", "3.14"],
   "version": 0.9.1
 }
