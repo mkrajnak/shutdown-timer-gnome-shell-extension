@@ -451,7 +451,7 @@ function init(){
 */
 function enable(){
   shutdownTimerButton = new ShutdownTimerButton();
-  changePosition();
+  Main.panel.addToStatusArea('shutdown-timer-gnome-shell-extensionr', shutdownTimerButton, 1);
   prepareSettings();
 }
 
@@ -468,7 +468,7 @@ function disable(){
   settings.disconnect(startChangeEventId);
   settings.disconnect(positionEventId);
   settings.disconnect(notificationsEventId);
-  settings.disconnect(hideTImeEventId);
+  settings.disconnect(hideTimeEventId);
   settings.disconnect(sleepWithWakeEventId);
   shutdownTimerButton.destroy()
 }
