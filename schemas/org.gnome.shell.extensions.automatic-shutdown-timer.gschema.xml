@@ -22,30 +22,6 @@ sudo glib-compile-schemas schemas -->
       <description>Set time value in seconds. Range 0 to 60.</description>
     </key>
 
-    <key type="i" name="wake-hours-value">
-      <default>0</default>
-      <summary>Wake Hours</summary>
-      <description>
-        Set time value in hours. Range 0 to 60. Time used by Wake Up feature
-      </description>
-    </key>
-
-    <key type="i" name="wake-minutes-value">
-      <default>0</default>
-      <summary>Wake Minutes</summary>
-      <description>
-        Set time value in minutes. Range 0 to 60. Time used by Wake Up feature
-      </description>
-    </key>
-
-    <key type="i" name="wake-seconds-value">
-      <default>0</default>
-      <summary>Wake Seconds</summary>
-      <description>
-        Set time value in seconds. Range 0 to 60. Time used by Wake Up feature
-      </description>
-    </key>
-
     <key type="i" name="action">
       <default>0</default>
       <summary>Action</summary>
@@ -68,12 +44,6 @@ sudo glib-compile-schemas schemas -->
       <default>false</default>
       <summary>Start timer</summary>
       <description>Start new timer</description>
-    </key>
-
-    <key type="b" name="wake-up">
-      <default>false</default>
-      <summary>Enable wake up feature</summary>
-      <description>Wake up feature provided by rtcwake</description>
     </key>
 
     <key type="b" name="notifications">
