@@ -36,7 +36,7 @@ const RIGHT = 2;
 
 // remeber connect methods ids
 let hChangeEventId, mChangeEventId, sChangeEventId, aChangeEventId;
-let notificationsEventId, hideTimeEventId, startChangeEventId, sleepWithWakeEventId;
+let notificationsEventId, hideTimeEventId, startChangeEventId;
 let positionEventId, tChangeEventId, shutdownTimerButton, settings, time, h, m, s;
 let notificationsEnable, hideTime;
 let isRunning = false;
@@ -78,7 +78,7 @@ const ShutdownTimerButton = new Lang.Class({
       this.menu.addMenuItem(this.popupMenu);
 
       // First Item
-      let newTimer = new PopupMenu.PopupMenuItem( _("Edit Time / Settings"));
+      let newTimer = new PopupMenu.PopupMenuItem(_("Set Timer / Settings"));
       this.popupMenu.addMenuItem(newTimer, 0);
       // Second Item
       let pauseTimer = new PopupMenu.PopupMenuItem(_("Pause / Resume"));
@@ -380,28 +380,6 @@ function changePosition(){
 
 }
 
-function sleepWithWakeUp(){
-  let pkexec = GLib.find_program_in_path('pkexec');
-	let rtcwake = GLib.find_program_in_path('rtcwake');
-  let wh = settings.get_int("wake-hours-value");
-  let wm = settings.get_int("wake-minutes-value");
-  let ws = settings.get_int("wake-seconds-value");
-
-  let wakeUpTime = new Date();
-  wakeUpTime.setHours(wh);
-  wakeUpTime.setMinutes(wm);
-  wakeUpTime.setSeconds(ws);
-
-  let now = new Date();
-  if (wakeUpTime < now.getTime()) {
-    wakeUpTime.setDate(wakeUpTime.getDate() + 1)
-  }
-  let t = Math.floor(wakeUpTime.getTime()/1000)
-  global.log("pkexec" + " rtcwake" + " -m mem -t " + t.toString());
-
-  Util.spawnCommandLine(pkexec + " " + rtcwake + " -m mem -t " + t.toString());
-}
-
 function toggleNotifications(){
   notificationsEnable = settings.get_boolean("notifications");
 }
@@ -432,7 +410,6 @@ function prepareSettings(){
   positionEventId = settings.connect("changed::position", changePosition);
   notificationsEventId = settings.connect("changed::notifications", toggleNotifications);
   hideTimeEventId = settings.connect("changed::hide-time", toggleHideTime);
-  sleepWithWakeEventId = settings.connect("changed::wake-up", sleepWithWakeUp)
   shutdownTimerButton._bindShortcuts();
   changeIcon();
   onTimeUpdate();
@@ -468,7 +445,6 @@ function disable(){
   settings.disconnect(startChangeEventId);
   settings.disconnect(positionEventId);
   settings.disconnect(notificationsEventId);
-  settings.disconnect(hideTImeEventId);
-  settings.disconnect(sleepWithWakeEventId);
+  settings.disconnect(hideTimeEventId);
   shutdownTimerButton.destroy()
 }
