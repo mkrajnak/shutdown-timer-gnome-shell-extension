@@ -4,18 +4,20 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-11-24 16:21+0200\n"
-"PO-Revision-Date: 2016-11-24 16:15+0200\n"
-"Last-Translator:  Martin Krajnak <krajnakmatto@gmail.com>\n"
+"PO-Revision-Date: 2019-09-23 13:27+0200\n"
+"Last-Translator: Jose Riha <jose1711@gmail.com>\n"
 "Language-Team: Slovak <krajnakmatto@gmail.com>\n"
 "Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Gtranslator 2.91.6\n"
+"X-Generator: Poedit 2.2.1\n"
+"X-Poedit-Basepath: ../../..\n"
+"X-Poedit-SearchPath-0: .\n"
 
 #: prefs.js:38
 msgid "Shutdown:"
@@ -26,7 +28,7 @@ msgid "after time expires"
 msgstr "po vypršaní času"
 
 #: prefs.js:47
-msgid "on time(24h format)"
+msgid "on time (24h format)"
 msgstr "v čase (24h formát)"
 
 #: prefs.js:63
@@ -67,11 +69,11 @@ msgstr "Skratka:"
 
 #: prefs.js:197
 msgid "Start/Stop Timer"
-msgstr "štart/pauza časovača"
+msgstr "Spustenie/zastavenia časovača"
 
 #: prefs.js:199
 msgid "Open options"
-msgstr "Otvor nastavenia"
+msgstr "Otvoriť nastavenia"
 
 #: prefs.js:201
 msgid "Restart Timer"
@@ -81,30 +83,74 @@ msgstr "Reštart časovača"
 msgid "Start"
 msgstr "Štart"
 
-#+: extension.js:41
+#: prefs.js:227
+msgid "Set Timer"
+msgstr "Nastaviť časovač"
+
+#: prefs.js:231
+msgid "Position in panel:"
+msgstr "Umiestnenie na paneli:"
+
+#: prefs.js:233
+msgid "Left"
+msgstr "Vľavo"
+
+#: prefs.js:240
+msgid "Middle"
+msgstr "V strede"
+
+#: prefs.js:247
+msgid "Right"
+msgstr "Vpravo"
+
+#: prefs.js:275
+msgid "Use Backspace to disable shortcut"
+msgstr "Použite Backspace pre zrušenie klávesovej skratky"
+
+#: prefs.js:282
+msgid "Toggle notifications:"
+msgstr "Notifikácie:"
+
+#: prefs.js:296
+msgid "Hide time when innactive:"
+msgstr "Skryť čas pri neaktivite:"
+
+#: prefs.js:302
+msgid "Settings"
+msgstr "Nastavenia"
+
+# +: extension.js:41
 msgid "Shutdown Timer"
 msgstr "Časovač vypnutia"
 
-#+: extension.js:72
+# +: extension.js:72
 msgid "New Timer"
 msgstr "Nový časovač"
 
-#+: extension.js:75
+# +: extension.js:75
 msgid "Pause/Resume Timer"
 msgstr "Pozastaviť/Spustiť časovač"
 
-#+: extension.js:83
+# +: extension.js:81
+msgid "Set Timer / Settings"
+msgstr "Nastaviť časovač / Nastavenia"
+
+# +: extension.js:83
 msgid "Restart Timer "
 msgstr "Reštartovať časovač"
 
-#+: extension.js:300
+# +: extension.js:84
+msgid "Pause / Resume"
+msgstr "Pozastaviť / Spustiť"
+
+# +: extension.js:300
 msgid "Shutdown in less than one minute"
-msgstr "Vypnutie počítača za menej ako jednu minútu"
+msgstr "Vypnutie počítača o menej ako jednu minútu"
 
-#+: extension.js:303
+# +: extension.js:303
 msgid "Reboot in less than one minute"
-msgstr "Reštart počítača za menej ako jednu minútu"
+msgstr "Reštart počítača o menej ako jednu minútu"
 
-#+: extension.js:306
+# +: extension.js:306
 msgid "Suspend in less than one minute"
-msgstr "Uspatie počítača za menej ako jednu minútu"
+msgstr "Uspatie počítača o menej ako jednu minútu"
