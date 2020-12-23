@@ -38,7 +38,7 @@ const RIGHT = 2;
 let hChangeEventId, mChangeEventId, sChangeEventId, aChangeEventId;
 let notificationsEventId, hideTimeEventId, startChangeEventId;
 let positionEventId, tChangeEventId, shutdownTimerButton, settings, time, h, m, s;
-let notificationsEnable, hideTime;
+let notificationsEnabled, hideTime;
 let isRunning = false;
 let notified = false;
 let position;
@@ -317,7 +317,7 @@ function calculateTime(){
 * Send notification to shell
 */
 function send_notification() {
-  if (!notificationsEnable) {
+  if (!notificationsEnabled) {
     return;
   }
   notified = true;
@@ -381,7 +381,7 @@ function changePosition(){
 }
 
 function toggleNotifications(){
-  notificationsEnable = settings.get_boolean("notifications");
+  notificationsEnabled = settings.get_boolean("notifications");
 }
 
 function toggleHideTime(){
