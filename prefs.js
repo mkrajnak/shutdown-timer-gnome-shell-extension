@@ -1,5 +1,6 @@
 const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
+const Gdk = imports.gi.Gdk;
 const Gio = imports.gi.Gio;
 const Lang = imports.lang;
 // init translation
@@ -9,7 +10,6 @@ const _ = Gettext.domain("shutdown-timer-gnome-shell-extension").gettext;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Extension = ExtensionUtils.getCurrentExtension();
 const Convenience = Extension.imports.convenience;
-const Pango = imports.gi.Pango;
 
 // options
 const SHUTDOWN = 0;
@@ -20,7 +20,6 @@ const SHUTDOWNONTIME = 1;
 const LEFT = 0;
 const MIDDLE = 1;
 const RIGHT = 2;
-const TIME_FONT_HEIGHT = "30";
 let settings, widget;
 
 function init() {
@@ -43,20 +42,20 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 		let stack = new Gtk.Stack({
             transition_type: Gtk.StackTransitionType.SLIDE_LEFT_RIGHT,
             transition_duration: 500,
-            margin_left: 10,
-            margin_right: 10
+            margin_start: 10,
+            margin_end: 10
         });
     let stack_switcher = new Gtk.StackSwitcher({
-        margin_left: 5,
+        margin_start: 5,
         margin_top: 5,
         margin_bottom: 5,
-        margin_right: 5,
+        margin_end: 5,
         halign: Gtk.Align.CENTER,
         stack: stack
     });
 
     this.setTime = new Gtk.Grid()
-    this.setTime.margin = 5;
+    this.setTimargin = 5;
     this.setTime.column_homogeneous = true;
     this.setTime.row_spacing = this.column_spacing = 10;
 
@@ -66,15 +65,15 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     this.opt.row_spacing = this.column_spacing = 10;
 
     //1st row
-    this.setTime.attach(new Gtk.HSeparator(), 0, 0, 6, 1);
+    this.setTime.attach(new Gtk.Separator({orientation : Gtk.Orientation.HORIZONTAL}), 0, 0, 6, 1);
     this.setTime.attach(new Gtk.Label({ label: _("Shutdown:"), halign: Gtk.Align.END }), 0, 1, 1, 1);
-    let afterTime = new Gtk.RadioButton({label: _("after time expires")});
+    let afterTime = new Gtk.CheckButton({label: _("after time expires")});
     afterTime.connect("toggled", Lang.bind(this, function() {
             settings.set_int("timer", SHUTDOWNAFTERTIME);
     }));
     this.setTime.attach(afterTime, 2, 1, 2, 1);
 
-    let onTime = new Gtk.RadioButton({group: afterTime,
+    let onTime = new Gtk.CheckButton({group: afterTime,
                                       label: _("on time (24h format)"),
                                       halign: Gtk.Align.START});
     onTime.connect("toggled", Lang.bind(this, function() {
@@ -89,7 +88,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
       afterTime.active = true;
     }
 
-    this.setTime.attach(new Gtk.HSeparator(), 0, 3, 6, 1);
+    this.setTime.attach(new Gtk.Separator({orientation : Gtk.Orientation.HORIZONTAL}), 0, 3, 6, 1);
     this.setTime.attach(new Gtk.Label({ label: _("Time:"), halign: Gtk.Align.END}), 0, 4, 1, 1);
     //2nd row
     let hour_label = new Gtk.Label({ label: _(" Hours ")});
@@ -102,7 +101,6 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     //3rd row
     let hours = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
     hours.set_increments(1, 1);
-    hours.modify_font(Pango.font_description_from_string(TIME_FONT_HEIGHT))
     hours.set_range(0, 24);
     hours.set_value(settings.get_int("hours-value"));
     hours.set_wrap(true)
@@ -114,7 +112,6 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
     let minutes = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
     minutes.set_increments(1, 1);
-    minutes.modify_font(Pango.font_description_from_string(TIME_FONT_HEIGHT))
     minutes.set_range(-1, 60);
     minutes.set_value(settings.get_int("minutes-value"));
 
@@ -142,7 +139,6 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
 
     // init seconds
     let seconds = new Gtk.SpinButton({ orientation: Gtk.Orientation.VERTICAL});
-    seconds.modify_font(Pango.font_description_from_string(TIME_FONT_HEIGHT))
     seconds.set_increments(1, 1);
     seconds.set_range(-1, 60);
     seconds.set_value(settings.get_int("seconds-value"));
@@ -183,23 +179,23 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     }));
     this.setTime.attach_next_to(seconds, minutes, Gtk.PositionType.RIGHT, 1, 1);
 
-    this.setTime.attach(new Gtk.HSeparator(), 0, 6, 6, 1);
+    this.setTime.attach(new Gtk.Separator({orientation : Gtk.Orientation.HORIZONTAL}), 0, 6, 6, 1);
     this.setTime.attach(new Gtk.Label({ label: _("Action:"), halign: Gtk.Align.END}), 0, 7, 1, 1);
     //4rd row
-    let shutdownRbtn = new Gtk.RadioButton({label: _("Shutdown")});
+    let shutdownRbtn = new Gtk.CheckButton({label: _("Shutdown")});
     shutdownRbtn.connect("toggled", Lang.bind(this, function() {
             settings.set_int("action", SHUTDOWN);
     }));
     this.setTime.attach(shutdownRbtn, 2, 7, 1, 1);
 
-    let restartRbtn = new Gtk.RadioButton({ group: shutdownRbtn,
+    let restartRbtn = new Gtk.CheckButton({ group: shutdownRbtn,
                                         label: _("Restart")});
     restartRbtn.connect("toggled", Lang.bind(this, function() {
             settings.set_int("action", REBOOT);
     }));
     this.setTime.attach_next_to(restartRbtn, shutdownRbtn, Gtk.PositionType.RIGHT, 1, 1);
 
-    let suspendRbtn = new Gtk.RadioButton({ group: shutdownRbtn,
+    let suspendRbtn = new Gtk.CheckButton({ group: shutdownRbtn,
                                         label: _("Suspend")});
     suspendRbtn.connect("toggled", Lang.bind(this, function() {
             settings.set_int("action", SUSPEND);
@@ -227,23 +223,23 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     stack.add_titled(this.setTime, "set-timer", _("Set Timer"));
 
     // start of Option tab
-    this.opt.attach(new Gtk.HSeparator(), 0, 0, 6, 1);
+    this.opt.attach(new Gtk.Separator({orientation : Gtk.Orientation.HORIZONTAL}), 0, 0, 6, 1);
     this.opt.attach(new Gtk.Label({ label: _("Position in panel:"), halign: Gtk.Align.END}), 0, 1, 2, 1);
 
-    let leftPositionRbtn = new Gtk.RadioButton({label: _("Left")});
+    let leftPositionRbtn = new Gtk.CheckButton({label: _("Left")});
     leftPositionRbtn.connect("toggled", Lang.bind(this, function() {
             settings.set_int("position", LEFT);
     }));
     this.opt.attach(leftPositionRbtn, 3, 1, 1, 1);
 
-    let middlePositionRbtn = new Gtk.RadioButton({ group: leftPositionRbtn,
+    let middlePositionRbtn = new Gtk.CheckButton({ group: leftPositionRbtn,
                                         label: _("Middle")});
     middlePositionRbtn.connect("toggled", Lang.bind(this, function() {
             settings.set_int("position", MIDDLE);
     }));
     this.opt.attach_next_to(middlePositionRbtn, leftPositionRbtn, Gtk.PositionType.RIGHT, 1, 1);
 
-    let rightPositionRbtn = new Gtk.RadioButton({ group: leftPositionRbtn,
+    let rightPositionRbtn = new Gtk.CheckButton({ group: leftPositionRbtn,
                                         label: _("Right")});
     rightPositionRbtn.connect("toggled", Lang.bind(this, function() {
             settings.set_int("position", RIGHT);
@@ -301,9 +297,19 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     this.opt.attach(hideTime, 3, 6, 1, 1);
     stack.add_titled(this.opt, "settings", _("Settings"));
 
-		this.pack_start(stack_switcher, false, true, 0);
-		this.pack_start(stack, true, true, 0);
+		this.append(stack_switcher, false, true, 0);
+		this.append(stack, true, true, 0);
+		
+    // Apply CSS styling
+    provider = new Gtk.CssProvider();
+    provider.load_from_path(Extension.dir.get_path() + '/prefs.css');
+    Gtk.StyleContext.add_provider_for_display(
+      Gdk.Display.get_default(), 
+      provider, 
+      Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+    );
   }
+  
 });
 
 // CODE forked from clipboard indicator
@@ -389,7 +395,7 @@ function createKeybindingWidget(SettingsSchema) {
           });
 
   column = new Gtk.TreeViewColumn();
-  column.pack_end(renderer, false);
+  column.pack_end(renderer, false); 
   column.add_attribute(renderer, "accel-key", COLUMN_KEY);
   column.add_attribute(renderer, "accel-mods", COLUMN_MODS);
 
@@ -400,7 +406,6 @@ function createKeybindingWidget(SettingsSchema) {
 
 function buildPrefsWidget() {
   widget = new AutomaticShutdownTimerPrefs;
-  widget.show_all();
 
   return widget;
 }
