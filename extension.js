@@ -67,7 +67,7 @@ const ShutdownTimerButton = new Lang.Class({
      this.button.add_child(this.icon_suspend_obj);
      this.button.add_child(this.icon_restart_obj);
      this.button.add_child(this.time);
-     this.actor.add_actor(this.button);
+     this.add_actor(this.button);
 
      this._buildMenu();
   },

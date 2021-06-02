@@ -216,7 +216,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     let start = new Gtk.Button ({label: _("Start")});
     start.connect("clicked", Lang.bind(this, function(){
       settings.set_boolean("timer-start", !settings.get_boolean("timer-start"));
-      let w = this.get_window()
+      let w = this.get_root()
       w.destroy()
     }));
     this.setTime.attach(start, 2, 8, 3, 1);
@@ -297,8 +297,8 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     this.opt.attach(hideTime, 3, 6, 1, 1);
     stack.add_titled(this.opt, "settings", _("Settings"));
 
-		this.append(stack_switcher, false, true, 0);
-		this.append(stack, true, true, 0);
+		this.append(stack_switcher);
+		this.append(stack);
 		
     // Apply CSS styling
     provider = new Gtk.CssProvider();
