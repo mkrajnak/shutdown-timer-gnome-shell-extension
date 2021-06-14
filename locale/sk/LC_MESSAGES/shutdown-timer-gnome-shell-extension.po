@@ -112,7 +112,7 @@ msgid "Toggle notifications:"
 msgstr "Notifikácie:"
 
 #: prefs.js:296
-msgid "Hide time when innactive:"
+msgid "Hide time when inactive:"
 msgstr "Skryť čas pri neaktivite:"
 
 #: prefs.js:302

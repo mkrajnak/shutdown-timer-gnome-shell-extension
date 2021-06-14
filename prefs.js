@@ -286,7 +286,7 @@ const AutomaticShutdownTimerPrefs = new GObject.Class({
     });
     this.opt.attach(notifications, 3, 5, 1, 1);
 
-    this.opt.attach(new Gtk.Label({ label: _("Hide time when innactive:"), halign: Gtk.Align.END}), 0, 6, 2, 1);
+    this.opt.attach(new Gtk.Label({ label: _("Hide time when inactive:"), halign: Gtk.Align.END}), 0, 6, 2, 1);
     let hideTime = new Gtk.Switch({
       active: settings.get_boolean("hide-time"),
 			halign: Gtk.Align.START
